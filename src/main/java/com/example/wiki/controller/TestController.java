@@ -6,9 +6,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class TestController {
-    @PostMapping("/hello")
-    public String hello(){
+    @RequestMapping("/hello")
+    public String hello() {
         return "Hello World";
+    }
+
+    @PostMapping("/hello/post")
+    public String helloPost(String name) {
+        return "Post Test:" + name;
     }
 }
 
