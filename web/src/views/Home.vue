@@ -48,7 +48,8 @@
           </a-menu>
         </a-layout-sider>
         <a-layout-content :style="{ padding: '0 24px', minHeight: '280px' }">
-          Content
+<!--          <pre>{{ eBook }}</pre>-->
+          <pre>{{ books }}</pre>
         </a-layout-content>
       </a-layout>
     </a-layout-content>
@@ -56,17 +57,32 @@
 </template>
 
 <script lang="ts">
-import {defineComponent} from 'vue';
+import {defineComponent, onMounted, ref,reactive,toRef} from 'vue';
 import axios from 'axios';
 
 export default defineComponent({
   name: 'Home',
   components: {},
+  //vue3 初始化调用 组合式API的入口 包含了vue2的生命周期函数
   setup() {
     console.log("setup");
-    axios.get("http://localhost:8081/ebook/list?name=Vue").then((response) => {
-      console.log(response);
+    //vue3 ref 响应式数据
+    const eBook = ref();
+    const eBook2 = reactive({books: []});
+
+    onMounted(() => {
+      console.log("onMounted");
+      axios.get("http://localhost:8081/ebook/list?name=Vue").then((response) => {
+        const data = response.data;
+        eBook.value = data.content;
+        eBook2.books = data.content;
+        console.log(response);
+      });
     });
+    return {
+      eBook,
+      books: toRef(eBook2,"books")
+    }
   }
 });
 </script>
