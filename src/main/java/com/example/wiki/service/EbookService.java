@@ -7,6 +7,7 @@ import com.example.wiki.req.EbookReq;
 import com.example.wiki.resp.EbookResp;
 import com.example.wiki.util.CopyUtil;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -21,10 +22,12 @@ public class EbookService {
         EbookExample example = new EbookExample();
         //相当于where语句
         EbookExample.Criteria criteria = example.createCriteria();
-        criteria.andNameLike("%" + req.getName() + "%");
+        if (!ObjectUtils.isEmpty(req.getName())) {
+            criteria.andNameLike("%" + req.getName() + "%");
+        }
         List<Ebook> ebooks = ebookMapper.selectByExample(example);
 //        for (Ebook ebook : ebooks) {
-            //Spring的工具类 copyProperties复制对象
+        //Spring的工具类 copyProperties复制对象
 //            BeanUtils.copyProperties(ebook, ebookResp);
 //            ret.add(ebookResp);
 

@@ -51,7 +51,7 @@
           <!--          <pre>{{ eBook }}</pre>-->
 
           <a-list item-layout="vertical" size="large" :grid="{gutter:20,column:3}"
-                   :data-source="eBook">
+                  :data-source="eBook">
             <template #renderItem="{ item }">
               <a-list-item key="item.name">
                 <template #actions>
@@ -125,7 +125,7 @@ export default defineComponent({
 
     onMounted(() => {
       console.log("onMounted");
-      axios.get("http://localhost:8081/ebook/list?name=教程").then((response) => {
+      axios.get("http://localhost:8081/ebook/list").then((response) => {
         const data = response.data;
         eBook.value = data.content;
         eBook2.books = data.content;
@@ -142,3 +142,14 @@ export default defineComponent({
   }
 });
 </script>
+
+<!--只在当前组件生效-->
+<style scoped>
+.ant-avatar {
+  width: 50px;
+  height: 50px;
+  line-height: 50px;
+  border-radius: 8%;
+  margin: 5px 0;
+}
+</style>

@@ -52,3 +52,7 @@ insert into `ebook` (`id`, `name`,`description`)
 values (2, 'Vue 入门教程','前端框架');
 insert into `ebook` (`id`, `name`,`description`)
 values (3, 'Spring 入门教程','轻量级开源框架');
+insert into `ebook` (`id`, `name`,`description`)
+values (4, 'Spring Security 入门教程','权限框架');
+insert into `ebook` (`id`, `name`,`description`)
+values (5, 'MySQL 入门教程','开源数据库');
