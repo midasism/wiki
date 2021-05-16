@@ -129,7 +129,6 @@ export default defineComponent({
         const data = response.data;
         eBook.value = data.content;
         eBook2.books = data.content;
-        console.log(response);
       });
     });
     return {
