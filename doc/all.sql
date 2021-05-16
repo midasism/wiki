@@ -50,3 +50,5 @@ insert into `ebook` (`id`, `name`,`description`)
 values (1, 'SpringBoot 入门教程','企业级开发首选框架');
 insert into `ebook` (`id`, `name`,`description`)
 values (2, 'Vue 入门教程','前端框架');
+insert into `ebook` (`id`, `name`,`description`)
+values (3, 'Spring 入门教程','轻量级开源框架');
