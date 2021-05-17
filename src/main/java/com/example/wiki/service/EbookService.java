@@ -5,6 +5,7 @@ import com.example.wiki.entity.EbookExample;
 import com.example.wiki.mapper.EbookMapper;
 import com.example.wiki.req.EbookReq;
 import com.example.wiki.resp.EbookResp;
+import com.example.wiki.resp.PageResp;
 import com.example.wiki.util.CopyUtil;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -24,15 +25,16 @@ public class EbookService {
     @Resource
     private EbookMapper ebookMapper;
 
-    public List<EbookResp> list(EbookReq req) {
+    public PageResp<EbookResp> list(EbookReq req) {
         EbookExample example = new EbookExample();
         //相当于where语句
         EbookExample.Criteria criteria = example.createCriteria();
         if (!ObjectUtils.isEmpty(req.getName())) {
             criteria.andNameLike("%" + req.getName() + "%");
         }
-        PageHelper.startPage(1, 3);
+        PageHelper.startPage(req.getPage(), req.getSize());
         List<Ebook> ebooks = ebookMapper.selectByExample(example);
+        //传入查询到的数据集合 获取分页信息
         PageInfo<Ebook> pageInfo = new PageInfo<>(ebooks);
         LOG.info("总行数:{}" , pageInfo.getTotal());
         LOG.info("总页数:{}" , pageInfo.getPages());
@@ -44,7 +46,11 @@ public class EbookService {
 //            EbookResp copy = CopyUtil.copy(ebook, EbookResp.class);
 //            ret.add(copy);
 //        }
-        List<EbookResp> ret = CopyUtil.copyList(ebooks, EbookResp.class);
-        return ret;
+        List<EbookResp> dataList = CopyUtil.copyList(ebooks, EbookResp.class);
+        //分页对象 封装了分页数据和分页总条数
+        PageResp<EbookResp> pageResp=new PageResp<>();
+        pageResp.setTotal(pageInfo.getTotal());
+        pageResp.setList(dataList);
+        return pageResp;
     }
 }
