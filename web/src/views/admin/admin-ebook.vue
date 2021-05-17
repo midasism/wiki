@@ -50,7 +50,7 @@ export default defineComponent({
     const ebooks = ref();
     const pagination = ref({
       current: 1,
-      pageSize: 3,
+      pageSize: 4,
       total: 0
     });
     const loading = ref(false);
@@ -100,13 +100,17 @@ export default defineComponent({
       loading.value = true;
       // 如果不清空现有数据，则编辑保存重新加载数据后，再点编辑，则列表显示的还是编辑前的数据
       // ebooks.value = [];
-      axios.get("/ebook/list", params).then((response) => {
+      axios.get("/ebook/list", {
+        params: params
+      }).then((response) => {
         loading.value = false;
         const data = response.data;
-        ebooks.value = data.content;
+        ebooks.value = data.content.list;
+        pagination.value.total=data.content.total;
 
         //重置分页按钮
         pagination.value.current = params.page;
+        // pagination.value.total = params.total;
       });
     };
 
@@ -123,7 +127,10 @@ export default defineComponent({
 
     //初始化数据
     onMounted(() => {
-      handleQuery({});
+      handleQuery({
+        page: 1,
+        size: pagination.value.pageSize
+      });
     });
 
     return {

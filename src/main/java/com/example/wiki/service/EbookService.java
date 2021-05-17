@@ -47,7 +47,7 @@ public class EbookService {
 //            ret.add(copy);
 //        }
         List<EbookResp> dataList = CopyUtil.copyList(ebooks, EbookResp.class);
-        //分页对象 封装了分页数据和分页总条数
+        //分页对象 封装了分页数据和总条数 前端拿到总条数才能分页
         PageResp<EbookResp> pageResp=new PageResp<>();
         pageResp.setTotal(pageInfo.getTotal());
         pageResp.setList(dataList);

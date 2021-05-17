@@ -48,8 +48,6 @@
           </a-menu>
         </a-layout-sider>
         <a-layout-content :style="{ padding: '0 24px', minHeight: '280px' }">
-          <!--          <pre>{{ eBook }}</pre>-->
-
           <a-list item-layout="vertical" size="large" :grid="{gutter:20,column:3}"
                   :data-source="eBook">
             <template #renderItem="{ item }">
@@ -127,8 +125,8 @@ export default defineComponent({
       console.log("onMounted");
       axios.get("/ebook/list").then((response) => {
         const data = response.data;
-        eBook.value = data.content;
-        eBook2.books = data.content;
+        eBook.value = data.content.list;
+        eBook2.books = data.content.list;
       });
     });
     return {
