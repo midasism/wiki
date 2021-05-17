@@ -4,6 +4,15 @@
       <div>
         <h1>电子书管理</h1>
       </div>
+<!--      编辑对话框-->
+      <a-modal
+          title="Title"
+          v-model:visible="modalVisible"
+          :confirm-loading="modalLoading"
+          @ok="handleOk"
+      >
+        <p>{{ modalText }}</p>
+      </a-modal>
       <a-table :columns="columns"
                :data-source="ebooks"
                :row-key="record => record.id"
@@ -17,7 +26,7 @@
 
         <template v-slot:action="{ text, record }">
           <a-space size="small">
-            <a-button type="primary">
+            <a-button type="primary" @click="edit">
               编辑
             </a-button>
             <a-button type="danger">
@@ -92,6 +101,25 @@ export default defineComponent({
       }
     ];
 
+    /**
+     * 编辑按钮
+     **/
+    const modalText = ref<string>('Content of the modal');
+    const modalVisible = ref<boolean>(false);
+    const modalLoading = ref<boolean>(false);
+
+    const edit = () => {
+      modalVisible.value = true;
+    };
+
+    const handleOk = () => {
+      modalText.value = 'The modal will be closed after two seconds';
+      modalLoading.value = true;
+      setTimeout(() => {
+        modalVisible.value = false;
+        modalLoading.value = false;
+      }, 2000);
+    };
 
     /**
      * 数据查询
@@ -106,7 +134,7 @@ export default defineComponent({
         loading.value = false;
         const data = response.data;
         ebooks.value = data.content.list;
-        pagination.value.total=data.content.total;
+        pagination.value.total = data.content.total;
 
         //重置分页按钮
         pagination.value.current = params.page;
@@ -138,7 +166,12 @@ export default defineComponent({
       pagination,
       columns,
       loading,
-      handleTableChange
+      handleTableChange,
+      modalText,
+      modalVisible,
+      edit,
+      handleOk,
+      modalLoading
     }
   }
 });
