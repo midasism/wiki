@@ -1,6 +1,9 @@
 package com.example.wiki.req;
 
-public class EbookReq extends PageReq{
+/**
+ * 查询电子书-请求参数
+ */
+public class EbookQueryReq extends PageReq{
     private Long id;
 
     private String name;

@@ -46,13 +46,25 @@ create table `ebook`
 ) engine = innodb
   default charset = utf8mb4 comment = '电子书';
 
-insert into `ebook` (`id`, `name`,`description`)
-values (1, 'SpringBoot 入门教程','企业级开发首选框架');
-insert into `ebook` (`id`, `name`,`description`)
-values (2, 'Vue 入门教程','前端框架');
-insert into `ebook` (`id`, `name`,`description`)
-values (3, 'Spring 入门教程','轻量级开源框架');
-insert into `ebook` (`id`, `name`,`description`)
-values (4, 'Spring Security 入门教程','权限框架');
-insert into `ebook` (`id`, `name`,`description`)
-values (5, 'MySQL 入门教程','开源数据库');
+delete
+from `ebook`;
+
+insert into `ebook` (`id`, `name`, `category1_id`, `category2_id`, `description`, `cover`, `doc_count`, `view_count`,
+                     `vote_count`)
+values (1, 'SpringBoot 入门教程', 1, 2, '企业级开发首选框架', '/image/cover1.png', 1, 2, 3);
+
+insert into `ebook` (`id`, `name`, `category1_id`, `category2_id`, `description`, `cover`, `doc_count`, `view_count`,
+                     `vote_count`)
+values (2, 'Vue 入门教程', 3, 4, '前端框架', '/image/cover2.png', 4, 5, 6);
+
+insert into `ebook` (`id`, `name`, `category1_id`, `category2_id`, `description`, `cover`, `doc_count`, `view_count`,
+                     `vote_count`)
+values (3, 'Spring 入门教程', 1, 2, '轻量级开源框架', '/image/cover1.png', 7, 6, 9);
+
+insert into `ebook` (`id`, `name`, `category1_id`, `category2_id`, `description`, `cover`, `doc_count`, `view_count`,
+                     `vote_count`)
+values (4, 'Spring Security 入门教程', 2, 2, '权限框架', '/image/cover2.png', 4, 2, 1);
+
+insert into `ebook` (`id`, `name`, `category1_id`, `category2_id`, `description`, `cover`, `doc_count`, `view_count`,
+                     `vote_count`)
+values (5, 'MySQL 入门教程', 1, 3, '开源数据库', '/image/cover1.png', 10, 1, 1);

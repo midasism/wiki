@@ -10,7 +10,7 @@
           title="Title"
           v-model:visible="modalVisible"
           :confirm-loading="modalLoading"
-          @ok="handleOk"
+          @ok="handleModalOk"
       >
         <a-form :model="ebook" :label-col="{ span: 6 }" :wrapper-col="{ span: 18 }">
           <a-form-item label="封面">
@@ -75,6 +75,7 @@ export default defineComponent({
     const param = ref();
     param.value = {};
     const ebook = ref()
+    const retEbook = ref()
     const ebooks = ref();
     const pagination = ref({
       current: 1,
@@ -129,18 +130,49 @@ export default defineComponent({
 
     const edit = (record: any) => {
       modalVisible.value = true;
-      ebook.value = record;
-      // ebook.value = JSON.parse(JSON.stringify(record));
+      // ebook.value = record;
+      ebook.value = JSON.parse(JSON.stringify(record));
     };
 
+    /**
+     * 编辑-保存
+     **/
+    const save = (record: any) => {
+      axios.post("/ebook/save", {
+        params: record
+      });
+    }
+
+    /**
+     * 模拟确认
+     **/
     const handleOk = () => {
-      modalText.value = 'The modal will be closed after two seconds';
       modalLoading.value = true;
       setTimeout(() => {
         modalVisible.value = false;
         modalLoading.value = false;
       }, 2000);
     };
+
+    /**
+     * 编辑-确认
+     **/
+    const handleModalOk = () => {
+      modalLoading.value = true;
+      axios.post("/ebook/save", ebook.value).then((response) => {
+        const data = response.data;
+        if (data.success) {
+          modalVisible.value = false;
+          modalLoading.value = false;
+
+          //重新加载列表
+          handleQuery({
+            page: pagination.value.current,
+            size: pagination.value.pageSize
+          });
+        }
+      });
+    }
 
     /**
      * 数据查询
@@ -193,7 +225,9 @@ export default defineComponent({
       modalVisible,
       ebook,
       handleOk,
-      modalLoading
+      handleModalOk,
+      modalLoading,
+      save
     }
   }
 });
