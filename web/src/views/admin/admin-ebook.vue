@@ -4,15 +4,33 @@
       <div>
         <h1>电子书管理</h1>
       </div>
-<!--      编辑对话框-->
+
+      <!--      编辑对话框-->
       <a-modal
           title="Title"
           v-model:visible="modalVisible"
           :confirm-loading="modalLoading"
           @ok="handleOk"
       >
-        <p>{{ modalText }}</p>
+        <a-form :model="ebook" :label-col="{ span: 6 }" :wrapper-col="{ span: 18 }">
+          <a-form-item label="封面">
+            <a-input v-model:value="ebook.cover"/>
+          </a-form-item>
+          <a-form-item label="名称">
+            <a-input v-model:value="ebook.name"/>
+          </a-form-item>
+          <a-form-item label="分类一">
+            <a-input v-model:value="ebook.category1Id"/>
+          </a-form-item>
+          <a-form-item label="分类二">
+            <a-input v-model:value="ebook.category2Id"/>
+          </a-form-item>
+          <a-form-item label="描述">
+            <a-input v-model:value="ebook.description" type="textarea"/>
+          </a-form-item>
+        </a-form>
       </a-modal>
+
       <a-table :columns="columns"
                :data-source="ebooks"
                :row-key="record => record.id"
@@ -26,7 +44,7 @@
 
         <template v-slot:action="{ text, record }">
           <a-space size="small">
-            <a-button type="primary" @click="edit">
+            <a-button type="primary" @click="edit(record)">
               编辑
             </a-button>
             <a-button type="danger">
@@ -56,6 +74,7 @@ export default defineComponent({
   setup() {
     const param = ref();
     param.value = {};
+    const ebook = ref()
     const ebooks = ref();
     const pagination = ref({
       current: 1,
@@ -108,8 +127,10 @@ export default defineComponent({
     const modalVisible = ref<boolean>(false);
     const modalLoading = ref<boolean>(false);
 
-    const edit = () => {
+    const edit = (record: any) => {
       modalVisible.value = true;
+      ebook.value = record;
+      // ebook.value = JSON.parse(JSON.stringify(record));
     };
 
     const handleOk = () => {
@@ -167,9 +188,10 @@ export default defineComponent({
       columns,
       loading,
       handleTableChange,
+      edit,
       modalText,
       modalVisible,
-      edit,
+      ebook,
       handleOk,
       modalLoading
     }
