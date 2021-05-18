@@ -31,6 +31,11 @@
         </a-form>
       </a-modal>
 
+      <p>
+        <a-button type="primary" size="large" @click="add">
+          新增
+        </a-button>
+      </p>
       <a-table :columns="columns"
                :data-source="ebooks"
                :row-key="record => record.id"
@@ -143,6 +148,7 @@ export default defineComponent({
       });
     }
 
+
     /**
      * 模拟确认
      **/
@@ -155,7 +161,7 @@ export default defineComponent({
     };
 
     /**
-     * 编辑-确认
+     * 编辑/新增-确认
      **/
     const handleModalOk = () => {
       modalLoading.value = true;
@@ -172,6 +178,17 @@ export default defineComponent({
           });
         }
       });
+    }
+
+    /**
+     * 新增按钮
+     **/
+    const add = () => {
+      // axios.post("/ebook/save", {
+      //   params: ebook
+      // });
+      modalVisible.value = true;
+      ebook.value={}
     }
 
     /**
@@ -227,7 +244,9 @@ export default defineComponent({
       handleOk,
       handleModalOk,
       modalLoading,
-      save
+      save,
+
+      add,
     }
   }
 });
