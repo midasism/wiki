@@ -29,7 +29,7 @@ insert into `demo` (`id`, `name`)
 values (2, 'b');
 
 
-# ebook
+# 电子书 ebook
 drop table if exists `ebook`;
 create table `ebook`
 (
@@ -68,3 +68,47 @@ values (4, 'Spring Security 入门教程', 2, 2, '权限框架', '/image/cover2.
 insert into `ebook` (`id`, `name`, `category1_id`, `category2_id`, `description`, `cover`, `doc_count`, `view_count`,
                      `vote_count`)
 values (5, 'MySQL 入门教程', 1, 3, '开源数据库', '/image/cover1.png', 10, 1, 1);
+
+
+# 分类 category
+drop table if exists `category`;
+create table `category`
+(
+    `id`     bigint not null comment 'id',
+    `parent` bigint not null default 0 comment '父id',
+    `name`   varchar(50) comment '名称',
+    `sort`   int comment '排序',
+    primary key (`id`)
+) engine = innodb
+  default charset = utf8mb4 comment = '分类';
+
+insert into `category`(`id`, `parent`, `name`, `sort`)
+values (100, 000, '前端开发', 100);
+insert into `category`(`id`, `parent`, `name`, `sort`)
+values (101, 100, 'Vue', 101);
+insert into `category`(`id`, `parent`, `name`, `sort`)
+values (102, 100, 'HTML、CSS', 102);
+insert into `category`(`id`, `parent`, `name`, `sort`)
+values (200, 000, 'Java', 200);
+insert into `category`(`id`, `parent`, `name`, `sort`)
+values (201, 200, '基础', 201);
+insert into `category`(`id`, `parent`, `name`, `sort`)
+values (202, 200, '框架', 202);
+insert into `category`(`id`, `parent`, `name`, `sort`)
+values (300, 000, 'Python', 300);
+insert into `category`(`id`, `parent`, `name`, `sort`)
+values (301, 300, '基础', 301);
+insert into `category`(`id`, `parent`, `name`, `sort`)
+values (302, 300, '进阶', 302);
+insert into `category`(`id`, `parent`, `name`, `sort`)
+values (400, 000, '数据库', 400);
+insert into `category`(`id`, `parent`, `name`, `sort`)
+values (401, 400, 'MySQL', 401);
+insert into `category`(`id`, `parent`, `name`, `sort`)
+values (500, 000, '计算机基础', 500);
+insert into `category`(`id`, `parent`, `name`, `sort`)
+values (501, 500, '计算机网络', 501);
+insert into `category`(`id`, `parent`, `name`, `sort`)
+values (502, 500, '操作系统', 502);
+insert into `category`(`id`, `parent`, `name`, `sort`)
+values (503, 500, '计算机组成原理', 503);
