@@ -30,8 +30,14 @@ public class CategoryService {
     @Resource
     private SnowFlake snowFlake;
 
+    /**
+     * 分页获取数据
+     * @param req
+     * @return
+     */
     public PageResp<CategoryQueryResp> list(CategoryQueryReq req) {
         CategoryExample example = new CategoryExample();
+        example.setOrderByClause("sort asc");
 //        //相当于where语句
         CategoryExample.Criteria criteria = example.createCriteria();
         //实现：根据name模糊查询
@@ -52,6 +58,18 @@ public class CategoryService {
         pageResp.setTotal(pageInfo.getTotal());
         pageResp.setList(dataList);
         return pageResp;
+    }
+
+    /**
+     * 获取全表数据
+     * @return
+     */
+    public List<CategoryQueryResp> all() {
+        CategoryExample example = new CategoryExample();
+        example.setOrderByClause("sort asc");
+        List<Category> categorys = categoryMapper.selectByExample(example);
+        List<CategoryQueryResp> dataList = CopyUtil.copyList(categorys, CategoryQueryResp.class);
+        return dataList;
     }
 
     /**

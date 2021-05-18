@@ -51,9 +51,8 @@
       <a-table :columns="columns"
                :data-source="Categorys"
                :row-key="record => record.id"
-               :pagination="pagination"
                :loading="Loading"
-               @change="handleTableChange"
+               :pagination="false"
       >
         <template #cover="{ text:cover }">
           <img v-if="cover" :src="cover" alt="avatar"/>
@@ -104,11 +103,6 @@ export default defineComponent({
     param.value = {};
     const Category = ref()
     const Categorys = ref();
-    const pagination = ref({
-      current: 1,
-      pageSize: 4,
-      total: 0
-    });
     const loading = ref(false);
 
     const columns = [
@@ -167,10 +161,7 @@ export default defineComponent({
         if (data.success) {
           modalVisible.value = false;
           //重新加载列表
-          handleQuery({
-            page: pagination.value.current,
-            size: pagination.value.pageSize
-          });
+          handleQuery();
         } else {
           message.error(data.message)
         }
@@ -197,10 +188,7 @@ export default defineComponent({
           modalLoading.value = false;
 
           //重新加载列表
-          handleQuery({
-            page: pagination.value.current,
-            size: pagination.value.pageSize
-          });
+          handleQuery();
         }
       });
     }
@@ -222,7 +210,7 @@ export default defineComponent({
         param += ("name=" + searchParam.value.name)
       }
       axios.get("/category/list" + param).then((response) => {
-        Categorys.value = response.data.content.list;
+        Categorys.value = response.data.content;
       });
     };
 
@@ -233,7 +221,7 @@ export default defineComponent({
       //搜索框内容为空 重新查询并展示所有数据
       if (searchParam.value.name == "") {
         axios.get("/category/list").then((response) => {
-          Categorys.value = response.data.content.list;
+          Categorys.value = response.data.content;
         });
       }
     };
@@ -242,53 +230,30 @@ export default defineComponent({
     /**
      * 数据查询
      **/
-    const handleQuery = (params: any) => {
+    const handleQuery = () => {
       loading.value = true;
       // 如果不清空现有数据，则编辑保存重新加载数据后，再点编辑，则列表显示的还是编辑前的数据
       // Categorys.value = [];
-      axios.get("/category/list", {
-        params: params
-      }).then((response) => {
+      axios.get("/category/all").then((response) => {
         loading.value = false;
         const data = response.data;
         if (data.success) {
-          Categorys.value = data.content.list;
-          pagination.value.total = data.content.total;
-
-          //重置分页按钮
-          pagination.value.current = params.page;
-          // pagination.value.total = params.total;
+          Categorys.value = data.content;
         } else {
           message.error(data.message);
         }
       });
     };
 
-    /**
-     * 表格点击页码时触发
-     */
-    const handleTableChange = (pagination: any) => {
-      console.log("看看自带的分页参数都有啥：" + pagination);
-      handleQuery({
-        page: pagination.current,
-        size: pagination.pageSize
-      });
-    };
-
     //初始化数据
     onMounted(() => {
-      handleQuery({
-        page: 1,
-        size: pagination.value.pageSize
-      });
+      handleQuery();
     });
 
     return {
       Categorys,
-      pagination,
       columns,
       loading,
-      handleTableChange,
       edit,
       modalText,
       modalVisible,
