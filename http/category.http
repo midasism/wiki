@@ -1,0 +1,28 @@
+GET http://localhost:8081/category/list?page=1&size=3
+Accept: application/json
+
+###
+
+POST http://localhost:8081/category/save
+Content-Type: application/json
+
+{
+  "name": "aaa",
+  "sort": 1,
+  "parent": 100
+}
+
+###删除接口
+
+POST http://localhost:8081/category/delete
+Content-Type: application/json
+
+{
+  "id": 1
+}
+
+###
+GET http://localhost:8081/category/list?name=Spring
+Accept: application/json
+
+###
