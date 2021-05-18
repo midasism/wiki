@@ -91,7 +91,6 @@ export default defineComponent({
     const param = ref();
     param.value = {};
     const ebook = ref()
-    const retEbook = ref()
     const ebooks = ref();
     const pagination = ref({
       current: 1,
@@ -252,12 +251,16 @@ export default defineComponent({
       }).then((response) => {
         loading.value = false;
         const data = response.data;
-        ebooks.value = data.content.list;
-        pagination.value.total = data.content.total;
+        if (data.success) {
+          ebooks.value = data.content.list;
+          pagination.value.total = data.content.total;
 
-        //重置分页按钮
-        pagination.value.current = params.page;
-        // pagination.value.total = params.total;
+          //重置分页按钮
+          pagination.value.current = params.page;
+          // pagination.value.total = params.total;
+        } else {
+          message.error(data.message);
+        }
       });
     };
 
