@@ -32,5 +32,12 @@ public class EbookController {
         ebookService.save(req);
         return resp;
     }
+
+    @DeleteMapping("/delete/{id}")
+    public CommonResp delete(@PathVariable long id) {
+        CommonResp resp = new CommonResp<>();
+        ebookService.delete(id);
+        return resp;
+    }
 }
 

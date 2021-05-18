@@ -5,6 +5,7 @@
         <h1>电子书管理</h1>
       </div>
 
+
       <!--      编辑对话框-->
       <a-modal
           title="Title"
@@ -32,9 +33,11 @@
       </a-modal>
 
       <p>
+        <!--        <a-space :size="40">-->
         <a-button type="primary" size="large" @click="add">
           新增
         </a-button>
+        <!--        </a-space>-->
       </p>
       <a-table :columns="columns"
                :data-source="ebooks"
@@ -52,9 +55,16 @@
             <a-button type="primary" @click="edit(record)">
               编辑
             </a-button>
-            <a-button type="danger">
-              删除
-            </a-button>
+            <a-popconfirm
+                title="确认要删除这本电子书吗?"
+                ok-text="是"
+                cancel-text="否"
+                @confirm="del(record)"
+            >
+              <a-button type="danger">
+                删除
+              </a-button>
+            </a-popconfirm>
           </a-space>
         </template>
       </a-table>
@@ -63,10 +73,10 @@
 </template>
 
 <script lang="ts">
-import {SmileOutlined, DownOutlined} from '@ant-design/icons-vue';
-import {defineComponent, onMounted, ref} from 'vue';
+import {SmileOutlined, DownOutlined, ExclamationCircleOutlined} from '@ant-design/icons-vue';
+import {createVNode, defineComponent, onMounted, ref} from 'vue';
 import axios from 'axios';
-import {message} from 'ant-design-vue';//全局提示
+import {message, Modal} from 'ant-design-vue';//全局提示
 
 
 export default defineComponent({
@@ -74,6 +84,7 @@ export default defineComponent({
   components: {
     SmileOutlined,
     DownOutlined,
+    ExclamationCircleOutlined,
   },
 
   setup() {
@@ -135,8 +146,8 @@ export default defineComponent({
 
     const edit = (record: any) => {
       modalVisible.value = true;
-      // ebook.value = record;
-      ebook.value = JSON.parse(JSON.stringify(record));
+      ebook.value = record;
+      // ebook.value = JSON.parse(JSON.stringify(record));
     };
 
     /**
@@ -184,12 +195,50 @@ export default defineComponent({
      * 新增按钮
      **/
     const add = () => {
-      // axios.post("/ebook/save", {
-      //   params: ebook
-      // });
       modalVisible.value = true;
-      ebook.value={}
+      ebook.value = {}
     }
+
+    /**
+     * 删除
+     **/
+
+    const del = (record: any) => {
+      axios.delete("/ebook/delete/" + record.id).then((response) => {
+        const data = response.data;
+        if (data.success) {
+          modalVisible.value = false;
+          modalLoading.value = false;
+
+          //重新加载列表
+          handleQuery({
+            page: pagination.value.current,
+            size: pagination.value.pageSize
+          });
+        }
+      });
+    }
+
+    /**
+     * 删除-确认框
+     **/
+    // const showDelConfirm = (record: any) => {
+    //   Modal.confirm({
+    //     title: '确定要删除这本电子书吗?',
+    //     icon: createVNode(ExclamationCircleOutlined),
+    //     // content: 'When clicked the OK button, this dialog will be closed after 1 second',
+    //     onOk() {
+    //       //调用删除方法
+    //       del(record);
+    //       return new Promise((resolve, reject) => {
+    //         setTimeout(Math.random() > 0.5 ? resolve : reject, 1000);
+    //       }).catch(() => console.log('Oops errors!'));
+    //     },
+    //     // eslint-disable-next-line @typescript-eslint/no-empty-function
+    //     onCancel() {
+    //     },
+    //   });
+    // }
 
     /**
      * 数据查询
@@ -247,6 +296,10 @@ export default defineComponent({
       save,
 
       add,
+
+      del,
+
+      // showDelConfirm
     }
   }
 });

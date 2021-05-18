@@ -8,4 +8,13 @@ Content-Type: application/x-www-form-urlencoded
 
 id=1&category1_id=3
 
+###删除接口
+
+POST http://localhost:8081/ebook/delete
+Content-Type: application/json
+
+{
+  "id": 1
+}
+
 ###
