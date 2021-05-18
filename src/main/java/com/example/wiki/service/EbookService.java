@@ -34,9 +34,11 @@ public class EbookService {
         EbookExample example = new EbookExample();
         //相当于where语句
         EbookExample.Criteria criteria = example.createCriteria();
+        //实现：根据name模糊查询
         if (!ObjectUtils.isEmpty(req.getName())) {
             criteria.andNameLike("%" + req.getName() + "%");
         }
+        //PageHelper根据前端的分页参数进行分页
         PageHelper.startPage(req.getPage(), req.getSize());
         List<Ebook> ebooks = ebookMapper.selectByExample(example);
         //传入查询到的数据集合 获取分页信息

@@ -31,14 +31,37 @@
           </a-form-item>
         </a-form>
       </a-modal>
+      <!--      -->
 
-      <p>
-        <!--        <a-space :size="40">-->
-        <a-button type="primary" size="large" @click="add">
-          新增
-        </a-button>
-        <!--        </a-space>-->
-      </p>
+
+      <!--顶部工具栏：搜索 添加     -->
+      <a-form layout="inline" :model="searchParam">
+        <!--          <a-input-search-->
+        <!--              v-model:value="searchParam.name"-->
+        <!--              placeholder="请输入电子书名称"-->
+        <!--              enter-button-->
+        <!--              @search="onSearch"-->
+        <!--              size="large"-->
+        <!--              @change="SearchChange"-->
+        <!--          />-->
+        <a-form-item>
+          <a-input v-model:value="searchParam.name" placeholder="请输入电子书名称" @change="SearchChange"
+                   @pressEnter="onSearch"/>
+        </a-form-item>
+        <a-form-item>
+          <a-button type="primary" size="large" @click="onSearch">
+            搜索
+          </a-button>
+        </a-form-item>
+        <a-form-item>
+          <a-button type="primary" size="large" @click="add">
+            新增
+          </a-button>
+        </a-form-item>
+      </a-form>
+      <!--      -->
+
+      <!--数据表格      -->
       <a-table :columns="columns"
                :data-source="ebooks"
                :row-key="record => record.id"
@@ -68,6 +91,7 @@
           </a-space>
         </template>
       </a-table>
+      <!--      -->
     </a-layout-content>
   </a-layout>
 </template>
@@ -76,7 +100,9 @@
 import {SmileOutlined, DownOutlined, ExclamationCircleOutlined} from '@ant-design/icons-vue';
 import {createVNode, defineComponent, onMounted, ref} from 'vue';
 import axios from 'axios';
-import {message, Modal} from 'ant-design-vue';//全局提示
+import {message, Modal} from 'ant-design-vue';
+import {Tool} from "@/util/tool";
+//全局提示
 
 
 export default defineComponent({
@@ -142,21 +168,23 @@ export default defineComponent({
     const modalText = ref<string>('Content of the modal');
     const modalVisible = ref<boolean>(false);
     const modalLoading = ref<boolean>(false);
+    const editCopy = ref()
 
     const edit = (record: any) => {
       modalVisible.value = true;
-      ebook.value = record;
-      // ebook.value = JSON.parse(JSON.stringify(record));
+      //ebook是对话框展示的数据 不直接使用列表的展示数据record 在对话框里的修改不会实时同步到列表
+      ebook.value = Tool.copy(record)
+      // ebook.value = record;
     };
 
     /**
      * 编辑-保存
      **/
-    const save = (record: any) => {
-      axios.post("/ebook/save", {
-        params: record
-      });
-    }
+    // const save = (record: any) => {
+    //   axios.post("/ebook/save", {
+    //     params: record
+    //   });
+    // }
 
 
     /**
@@ -185,7 +213,7 @@ export default defineComponent({
             page: pagination.value.current,
             size: pagination.value.pageSize
           });
-        }else{
+        } else {
           message.error(data.message)
         }
       });
@@ -239,6 +267,42 @@ export default defineComponent({
     //     },
     //   });
     // }
+
+
+    /**
+     * 搜索
+     **/
+    const inputValue = ref<string>('');
+    const searchParam = ref({
+      name: ""
+    })
+
+    const onSearch = () => {
+      //搜索参数
+      let param = ""
+      if (searchParam.value.name != "") {
+        param += (param == "" ? "?" : "&")
+        param += ("name=" + searchParam.value.name)
+      }
+      axios.get("/ebook/list" + param).then((response) => {
+        ebooks.value = response.data.content.list;
+      });
+      // console.log('use value', searchValue);
+      // console.log('or use this.value', inputValue.value);
+    };
+
+    /**
+     * 搜索框内容改变触发
+     **/
+    const SearchChange = () => {
+      //搜索框内容为空 重新查询并展示所有数据
+      if (searchParam.value.name == "") {
+        axios.get("/ebook/list").then((response) => {
+          ebooks.value = response.data.content.list;
+        });
+      }
+    };
+
 
     /**
      * 数据查询
@@ -297,13 +361,18 @@ export default defineComponent({
       handleOk,
       handleModalOk,
       modalLoading,
-      save,
+      // save,
 
       add,
 
       del,
 
       // showDelConfirm
+
+      searchParam,
+      inputValue,
+      onSearch,
+      SearchChange,
     }
   }
 });
