@@ -14,7 +14,7 @@ public class PageReq {
      * 每页条数
      */
     @NotNull(message = "每页条数不能为空")
-    @Max(value = 100, message = "每页条数不能超过1000")
+    @Max(value = 1000, message = "每页条数不能超过1000")
     private int size;
 
     public int getPage() {
