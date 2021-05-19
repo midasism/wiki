@@ -18,7 +18,12 @@
             <a-input v-model:value="Category.name"/>
           </a-form-item>
           <a-form-item label="父分类">
-            <a-input v-model:value="Category.parent"/>
+            <a-select
+                v-model:value="Category.parent"
+            >
+              <a-select-option value="0">无</a-select-option>
+              <a-select-option v-for="c in levelData" :key="c.id" :value="c.id" :disabled="Category.id === c.id">{{ c.name }}</a-select-option>
+            </a-select>
           </a-form-item>
           <a-form-item label="顺序">
             <a-input v-model:value="Category.sort"/>
