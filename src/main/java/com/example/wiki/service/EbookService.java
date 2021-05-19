@@ -38,6 +38,10 @@ public class EbookService {
         if (!ObjectUtils.isEmpty(req.getName())) {
             criteria.andNameLike("%" + req.getName() + "%");
         }
+        //实现：根据分类二查询电子书
+        if (!ObjectUtils.isEmpty(req.getCategory2Id())) {
+            criteria.andCategory2IdEqualTo(req.getCategory2Id());
+        }
         //PageHelper根据前端的分页参数进行分页
         PageHelper.startPage(req.getPage(), req.getSize());
         List<Ebook> ebooks = ebookMapper.selectByExample(example);

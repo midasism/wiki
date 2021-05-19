@@ -99,17 +99,15 @@ export default defineComponent({
       {type: 'MessageOutlined', text: '2'},
     ];
 
+    let category2Id = 0;
+
     /**
      * 数据查询
      **/
     const handleQuery = (params: any) => {
-      // loading.value = true;
-      // 如果不清空现有数据，则编辑保存重新加载数据后，再点编辑，则列表显示的还是编辑前的数据
-      // ebooks.value = [];
       axios.get("/ebook/list", {
         params: params
       }).then((response) => {
-        // loading.value = false;
         const data = response.data;
         if (data.success) {
           ebooks.value = data.content.list;
@@ -125,9 +123,7 @@ export default defineComponent({
      * 查询所有分类
      **/
     const CategoryQuery = () => {
-      // loading.value = true;
       axios.get("/category/all").then((response) => {
-        // loading.value = false;
         const data = response.data;
         if (data.success) {
           categoryData.value = data.content;
@@ -138,6 +134,7 @@ export default defineComponent({
           handleQuery({
             page: 1,
             size: 500,
+            category2Id: category2Id
           });
         } else {
           message.error(data.message);
@@ -145,23 +142,23 @@ export default defineComponent({
       });
     };
 
+    /**
+     * 点击二级菜单触发：根据二级分类查询电子书
+     **/
     const MenuClick = (value: any) => {
       console.log(value)
-      isShowWelcome.value = value.key === 'welcome';
-
-      // let tempData = []
-      // for (let i = 0; i < ebooks.value.length; i++) {
-      //   if (ebooks.value[i].category2Id === category2Id) {
-      //     tempData.push(ebooks.value[i])
-      //   }
-      // }
-      // ebooks.value = Tool.copy(tempData)
+      if (value.key === 'welcome') {
+        isShowWelcome.value = true;
+      } else {
+        category2Id = value.key;
+        isShowWelcome.value = false;
+        CategoryQuery()
+      }
     }
 
     onMounted(() => {
       console.log("onMounted");
       CategoryQuery()
-      console.log(categoryValue)
     });
     return {
       eBook,
