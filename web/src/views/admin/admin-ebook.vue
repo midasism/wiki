@@ -25,12 +25,12 @@
                         :field-names="{label:'name',value:'id',children:'children'}"
             />
           </a-form-item>
-<!--          <a-form-item label="分类一">-->
-<!--            <a-input v-model:value="ebook.category1Id"/>-->
-<!--          </a-form-item>-->
-<!--          <a-form-item label="分类二">-->
-<!--            <a-input v-model:value="ebook.category2Id"/>-->
-<!--          </a-form-item>-->
+          <!--          <a-form-item label="分类一">-->
+          <!--            <a-input v-model:value="ebook.category1Id"/>-->
+          <!--          </a-form-item>-->
+          <!--          <a-form-item label="分类二">-->
+          <!--            <a-input v-model:value="ebook.category2Id"/>-->
+          <!--          </a-form-item>-->
           <a-form-item label="描述">
             <a-input v-model:value="ebook.description" type="textarea"/>
           </a-form-item>
@@ -78,6 +78,10 @@
           <img v-if="cover" :src="cover" alt="avatar"/>
         </template>
 
+        <template #categoryId="{ text,record }">
+          {{ QueryCategoryName(record.category1Id, record.category2Id) }}
+        </template>
+
         <template v-slot:action="{ text, record }">
           <a-space size="small">
             <a-button type="primary" @click="edit(record)">
@@ -123,10 +127,14 @@ export default defineComponent({
     param.value = {};
     const ebook = ref()
     const ebooks = ref();
+    //分类原始数据
+    const categoryData = ref();
     //树型数据
     const categoryValue = ref()
     //将分类1和分类2拼接
     const categoryId = ref()
+    //展示分类名
+    let categoryName = ""
     const pagination = ref({
       current: 1,
       pageSize: 4,
@@ -145,12 +153,9 @@ export default defineComponent({
         dataIndex: 'name'
       },
       {
-        title: '分类一',
-        dataIndex: 'category1Id'
-      },
-      {
-        title: '分类二',
-        dataIndex: 'category2Id'
+        title: '分类',
+        dataIndex: 'categoryId',
+        slots: {customRender: 'categoryId'}
       },
       {
         title: '文档数',
@@ -352,6 +357,7 @@ export default defineComponent({
         loading.value = false;
         const data = response.data;
         if (data.success) {
+          categoryData.value = data.content;
           //加载分类树型数据
           categoryValue.value = []
           categoryValue.value = Tool.arrayTree(data.content, 0)
@@ -364,6 +370,26 @@ export default defineComponent({
           message.error(data.message);
         }
       });
+    };
+
+    /**
+     * 查询分类名
+     */
+    const QueryCategoryName = (category1Id: number, category2Id: number) => {
+      let name1 = ""
+      let name2 = ""
+
+      for (let i = 0; i < categoryData.value.length; i++) {
+        const c = categoryData.value[i];
+        if (c.id === category1Id) {
+          name1 = c.name;
+        } else if (c.id === category2Id) {
+          name2 = c.name;
+        }
+        if (name1 != "" && name2 != "") {
+          return name1 + " / " + name2;
+        }
+      }
     };
 
     /**
@@ -408,9 +434,11 @@ export default defineComponent({
       onSearch,
       SearchChange,
 
+      QueryCategoryName,
       CategoryQuery,
       categoryValue,
       categoryId,
+      categoryName
     }
   }
 });
