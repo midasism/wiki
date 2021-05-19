@@ -20,12 +20,17 @@
           <a-form-item label="名称">
             <a-input v-model:value="ebook.name"/>
           </a-form-item>
-          <a-form-item label="分类一">
-            <a-input v-model:value="ebook.category1Id"/>
+          <a-form-item label="分类">
+            <a-cascader v-model:value="categoryId" :options="categoryValue"
+                        :field-names="{label:'name',value:'id',children:'children'}"
+            />
           </a-form-item>
-          <a-form-item label="分类二">
-            <a-input v-model:value="ebook.category2Id"/>
-          </a-form-item>
+<!--          <a-form-item label="分类一">-->
+<!--            <a-input v-model:value="ebook.category1Id"/>-->
+<!--          </a-form-item>-->
+<!--          <a-form-item label="分类二">-->
+<!--            <a-input v-model:value="ebook.category2Id"/>-->
+<!--          </a-form-item>-->
           <a-form-item label="描述">
             <a-input v-model:value="ebook.description" type="textarea"/>
           </a-form-item>
@@ -118,6 +123,10 @@ export default defineComponent({
     param.value = {};
     const ebook = ref()
     const ebooks = ref();
+    //树型数据
+    const categoryValue = ref()
+    //将分类1和分类2拼接
+    const categoryId = ref()
     const pagination = ref({
       current: 1,
       pageSize: 4,
@@ -168,13 +177,13 @@ export default defineComponent({
     const modalText = ref<string>('Content of the modal');
     const modalVisible = ref<boolean>(false);
     const modalLoading = ref<boolean>(false);
-    const editCopy = ref()
 
     const edit = (record: any) => {
       modalVisible.value = true;
       //ebook是对话框展示的数据 不直接使用列表的展示数据record 在对话框里的修改不会实时同步到列表
       ebook.value = Tool.copy(record)
-      // ebook.value = record;
+      //将电子书的两级分类信息合并 在级联框渲染
+      categoryId.value = [ebook.value.category1Id, ebook.value.category2Id]
     };
 
     /**
@@ -203,6 +212,9 @@ export default defineComponent({
      **/
     const handleModalOk = () => {
       modalLoading.value = true;
+      //保存的时候将分类数组拆分成两个字段
+      ebook.value.category1Id = categoryId.value[0]
+      ebook.value.category2Id = categoryId.value[1]
       axios.post("/ebook/save", ebook.value).then((response) => {
         const data = response.data;
         modalLoading.value = false;
@@ -330,6 +342,31 @@ export default defineComponent({
     };
 
     /**
+     * 查询所有分类
+     **/
+    const CategoryQuery = () => {
+      loading.value = true;
+      // 如果不清空现有数据，则编辑保存重新加载数据后，再点编辑，则列表显示的还是编辑前的数据
+      // Categorys.value = [];
+      axios.get("/category/all").then((response) => {
+        loading.value = false;
+        const data = response.data;
+        if (data.success) {
+          //加载分类树型数据
+          categoryValue.value = []
+          categoryValue.value = Tool.arrayTree(data.content, 0)
+          // 加载完分类后，再加载电子书，否则如果分类树加载很慢，则电子书渲染会报错
+          handleQuery({
+            page: 1,
+            size: pagination.value.pageSize,
+          });
+        } else {
+          message.error(data.message);
+        }
+      });
+    };
+
+    /**
      * 表格点击页码时触发
      */
     const handleTableChange = (pagination: any) => {
@@ -342,10 +379,7 @@ export default defineComponent({
 
     //初始化数据
     onMounted(() => {
-      handleQuery({
-        page: 1,
-        size: pagination.value.pageSize
-      });
+      CategoryQuery()
     });
 
     return {
@@ -373,6 +407,10 @@ export default defineComponent({
       inputValue,
       onSearch,
       SearchChange,
+
+      CategoryQuery,
+      categoryValue,
+      categoryId,
     }
   }
 });
