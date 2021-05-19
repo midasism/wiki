@@ -9,13 +9,18 @@
               :defalut-open-keys="['2']"
               style="height: 100%"
           >
+            <a-menu-item key="welcome" @click="MenuClick">
+              <PieChartOutlined/>
+              <span>欢迎</span>
+            </a-menu-item>
+
             <a-sub-menu v-for="c in categoryValue" :key="c.id">
               <template v-slot:title>
                 <PieChartOutlined/>
                 <span>{{ c.name }}</span>
               </template>
 
-              <a-menu-item v-for="c2 in c.children" :key="c2.id" @click="MenuClick(c2.id)">
+              <a-menu-item v-for="c2 in c.children" :key="c2.id" @click="MenuClick">
                 <!--                <PieChartOutlined/>-->
                 <span>{{ c2.name }}</span>
               </a-menu-item>
@@ -24,7 +29,10 @@
           </a-menu>
         </a-layout-sider>
         <a-layout-content :style="{ padding: '0 24px', minHeight: '280px' }">
-          <a-list item-layout="vertical" size="large" :grid="{gutter:20,column:3}"
+          <div v-show="isShowWelcome">
+            <h1>欢迎</h1>
+          </div>
+          <a-list v-show="!isShowWelcome" item-layout="vertical" size="large" :grid="{gutter:20,column:3}"
                   :data-source="eBook">
             <template #renderItem="{ item }">
               <a-list-item key="item.name">
@@ -83,6 +91,8 @@ export default defineComponent({
     const openKeys = ref()
     const selectedKeys = ref()
 
+    const isShowWelcome = ref(true)
+
     const actions: Record<string, string>[] = [
       {type: 'StarOutlined', text: '156'},
       {type: 'LikeOutlined', text: '156'},
@@ -135,8 +145,10 @@ export default defineComponent({
       });
     };
 
-    const MenuClick = (category2Id: number) => {
-      console.log(category2Id)
+    const MenuClick = (value: any) => {
+      console.log(value)
+      isShowWelcome.value = value.key === 'welcome';
+
       // let tempData = []
       // for (let i = 0; i < ebooks.value.length; i++) {
       //   if (ebooks.value[i].category2Id === category2Id) {
@@ -161,6 +173,7 @@ export default defineComponent({
 
       MenuClick,
 
+      isShowWelcome,
     }
   }
 });
