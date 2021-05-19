@@ -48,8 +48,9 @@
       <!--      -->
 
       <!--数据表格      -->
+      <!-- 只要数据有children属性，是递归结构，表格会自动转化为树型表格     -->
       <a-table :columns="columns"
-               :data-source="Categorys"
+               :data-source="levelData"
                :row-key="record => record.id"
                :loading="Loading"
                :pagination="false"
@@ -103,6 +104,7 @@ export default defineComponent({
     param.value = {};
     const Category = ref()
     const Categorys = ref();
+    const levelData = ref();
     const loading = ref(false);
 
     const columns = [
@@ -167,6 +169,7 @@ export default defineComponent({
         }
       });
     }
+
 
     /**
      * 新增按钮
@@ -238,7 +241,11 @@ export default defineComponent({
         loading.value = false;
         const data = response.data;
         if (data.success) {
-          Categorys.value = data.content;
+          Categorys.value = data.content
+          console.log(Categorys.value)
+          levelData.value = []
+          levelData.value = Tool.arrayTree(Categorys.value, 0)
+          console.log(levelData)
         } else {
           message.error(data.message);
         }
@@ -270,6 +277,8 @@ export default defineComponent({
       inputValue,
       onSearch,
       SearchChange,
+
+      levelData,
     }
   }
 });
