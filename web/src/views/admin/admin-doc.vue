@@ -18,16 +18,28 @@
             <a-input v-model:value="Doc.name"/>
           </a-form-item>
           <a-form-item label="父文档">
-            <a-select
+            <a-tree-select
                 v-model:value="Doc.parent"
+                style="width: 100%"
+                :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
+                :tree-data="tempLevelData"
+                placeholder="请选择父文档"
+                tree-default-expand-all
+                :replaceFields="{title:'name',key:'id',value:'id'}"
             >
-              <a-select-option value="0">无</a-select-option>
-              <a-select-option v-for="c in levelData" :key="c.id" :value="c.id" :disabled="Doc.id === c.id">{{
-                  c.name
-                }}
-              </a-select-option>
-            </a-select>
+            </a-tree-select>
           </a-form-item>
+<!--          <a-form-item label="父文档">-->
+<!--            <a-select-->
+<!--                v-model:value="Doc.parent"-->
+<!--            >-->
+<!--              <a-select-option value="0">无</a-select-option>-->
+<!--              <a-select-option v-for="c in levelData" :key="c.id" :value="c.id" :disabled="Doc.id === c.id">{{-->
+<!--                  c.name-->
+<!--                }}-->
+<!--              </a-select-option>-->
+<!--            </a-select>-->
+<!--          </a-form-item>-->
           <a-form-item label="顺序">
             <a-input v-model:value="Doc.sort"/>
           </a-form-item>
@@ -113,6 +125,9 @@ export default defineComponent({
     const Doc = ref()
     const Docs = ref();
     const levelData = ref();
+    //编辑时显示的树型数据 剔除了自身节点和子节点 防止形成引用循环 导致节点从树中脱离
+    const tempLevelData = ref();
+    tempLevelData.value = []
     const loading = ref(false);
 
     const columns = [
@@ -145,7 +160,11 @@ export default defineComponent({
     const edit = (record: any) => {
       modalVisible.value = true;
       //Doc是对话框展示的数据 不直接使用列表的展示数据record 在对话框里的修改不会实时同步到列表
+      tempLevelData.value = Tool.copy(levelData.value)
       Doc.value = Tool.copy(record)
+      setDisable(tempLevelData.value, record.id)
+      //最前面增加 无（根节点）
+      tempLevelData.value.unshift({id: 0, name: '无'})
     };
 
 
@@ -185,6 +204,9 @@ export default defineComponent({
     const add = () => {
       modalVisible.value = true;
       Doc.value = {}
+      tempLevelData.value = Tool.copy(levelData.value)
+      //最前面增加 无（根节点）
+      tempLevelData.value.unshift({id: 0, name: '无'})
     }
 
     /**
@@ -257,6 +279,27 @@ export default defineComponent({
       });
     };
 
+    const setDisable = (treeSelectData: any, id: any) => {
+      for (let i = 0; i < treeSelectData.length; i++) {
+        const data = treeSelectData[i];
+        if (data.id === id) {
+          data.disabled = true;
+
+          const children = data.children;
+          if (Tool.isNotEmpty(children)) {
+            for (let k = 0; k < children.length; k++) {
+              setDisable(children, children[k].id)
+            }
+          }
+        } else {
+          const children = data.children;
+          if (Tool.isNotEmpty(children)) {
+            setDisable(children, id)
+          }
+        }
+      }
+    }
+
     //初始化数据
     onMounted(() => {
       handleQuery();
@@ -284,6 +327,8 @@ export default defineComponent({
       SearchChange,
 
       levelData,
+
+      tempLevelData,
     }
   }
 });
