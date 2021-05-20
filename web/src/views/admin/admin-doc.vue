@@ -108,6 +108,7 @@ import {createVNode, defineComponent, onMounted, ref} from 'vue';
 import axios from 'axios';
 import {message, Modal} from 'ant-design-vue';
 import {Tool} from "@/util/tool";
+import {useRoute} from "vue-router";
 //全局提示
 
 
@@ -120,6 +121,9 @@ export default defineComponent({
   },
 
   setup() {
+    //路由内置参数 包含路由信息
+    const route = useRoute()
+    console.log(route.query.ebookId)
     const param = ref();
     param.value = {};
     const Doc = ref()
@@ -184,6 +188,7 @@ export default defineComponent({
      **/
     const handleModalOk = () => {
       modalLoading.value = true;
+      Doc.value.ebookId = route.query.ebookId
       axios.post("/doc/save", Doc.value).then((response) => {
         const data = response.data;
         modalLoading.value = false;
@@ -269,7 +274,6 @@ export default defineComponent({
         const data = response.data;
         if (data.success) {
           Docs.value = data.content
-          console.log(Docs.value)
           levelData.value = []
           levelData.value = Tool.arrayTree(Docs.value, 0)
           console.log(levelData)
