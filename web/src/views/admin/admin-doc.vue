@@ -218,16 +218,14 @@ export default defineComponent({
      * 删除
      **/
     let deleteIds: Array<String> = []
+    let AllDocNames = ""
 
     const del = (record: any) => {
       getDeleteIds(levelData.value, record.id)
 
-      let IdsStr = ""
-      for (let i = 0; i < deleteIds.length; i++) {
-        IdsStr += deleteIds[i];
-        if (i != deleteIds.length - 1) {
-          IdsStr += ",";
-        }
+      if (deleteIds.length > 1) {
+        doubleCheckDelete(deleteIds, record)
+        return
       }
 
       axios.delete("/doc/delete/" + deleteIds.join(",")).then((response) => {
@@ -238,18 +236,22 @@ export default defineComponent({
 
           //重新加载列表
           handleQuery();
+          //清空待删除文档名和文档id
+          AllDocNames = ""
+          deleteIds = []
         }
       });
     }
 
     /**
-     * 获取待删除节点及子节点的id
+     * 递归获取待删除节点及子节点的id
      **/
     const getDeleteIds = (treeSelectData: any, id: any) => {
       for (let i = 0; i < treeSelectData.length; i++) {
         const data = treeSelectData[i];
         if (data.id == id) {
-          deleteIds.push(data.id)
+          deleteIds.push(data.id);
+          AllDocNames += (data.name + " ");
           const children = data.children;
           if (Tool.isNotEmpty(children)) {
             for (let k = 0; k < children.length; k++) {
@@ -318,6 +320,9 @@ export default defineComponent({
       });
     };
 
+    /**
+     * 递归设置当前文档及子文档为不可选 防止一个文档选择自己子文档为父文档，造成引用循环
+     **/
     const setDisable = (treeSelectData: any, id: any) => {
       for (let i = 0; i < treeSelectData.length; i++) {
         const data = treeSelectData[i];
@@ -338,6 +343,37 @@ export default defineComponent({
         }
       }
     }
+
+    /**
+     * 递归获取待删除节点及子节点的id
+     **/
+
+
+    const doubleCheckDelete = (deleteIds: Array<String>, record: any) => {
+      console.log(AllDocNames)
+      Modal.confirm({
+        title: '你想要删除本文档及所有子文档吗？',
+        icon: createVNode(ExclamationCircleOutlined),
+        content: AllDocNames,
+        onOk() {
+          return new Promise((resolve, reject) => {
+            axios.delete("/doc/delete/" + deleteIds.join(",")).then((response) => {
+              const data = response.data;
+              if (data.success) {
+                modalVisible.value = false;
+                modalLoading.value = false;
+                //重新加载列表
+                handleQuery();
+                //清空待删除文档名和文档id
+                AllDocNames = ""
+                deleteIds = []
+              }
+            });
+            setTimeout(Math.random() > 0.5 ? resolve : reject, 1000);
+          }).catch(() => console.log('Oops errors!'));
+        },
+      });
+    };
 
     //初始化数据
     onMounted(() => {
