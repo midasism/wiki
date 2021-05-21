@@ -43,6 +43,10 @@
           <a-form-item label="顺序">
             <a-input v-model:value="Doc.sort"/>
           </a-form-item>
+          <a-form-item label="内容">
+            <div id="content"></div>
+          </a-form-item>
+
         </a-form>
       </a-modal>
       <!--      -->
@@ -109,6 +113,7 @@ import axios from 'axios';
 import {message, Modal} from 'ant-design-vue';
 import {Tool} from "@/util/tool";
 import {useRoute} from "vue-router";
+import E from 'wangeditor'
 //全局提示
 
 
@@ -133,6 +138,7 @@ export default defineComponent({
     const tempLevelData = ref();
     tempLevelData.value = []
     const loading = ref(false);
+    //wangEditor
 
     const columns = [
       {
@@ -169,6 +175,11 @@ export default defineComponent({
       setDisable(tempLevelData.value, record.id)
       //最前面增加 无（根节点）
       tempLevelData.value.unshift({id: 0, name: '无'})
+
+      setTimeout(function (){
+        const editor = new E('#content')
+        editor.create();
+      },100);
     };
 
 
@@ -212,6 +223,11 @@ export default defineComponent({
       tempLevelData.value = Tool.copy(levelData.value)
       //最前面增加 无（根节点）
       tempLevelData.value.unshift({id: 0, name: '无'})
+
+      setTimeout(function (){
+        const editor = new E('#content')
+        editor.create();
+      },100);
     }
 
     /**
@@ -374,6 +390,7 @@ export default defineComponent({
         },
       });
     };
+
 
     //初始化数据
     onMounted(() => {
