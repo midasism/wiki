@@ -14,12 +14,9 @@ Content-Type: application/json
 
 ###删除接口
 
-POST http://localhost:8081/doc/delete
+DELETE http://localhost:8081/doc/delete/1
 Content-Type: application/json
 
-{
-  "id": 1
-}
 
 ###
 GET http://localhost:8081/doc/list?name=Spring

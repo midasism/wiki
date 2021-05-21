@@ -32,6 +32,7 @@ public class DocService {
 
     /**
      * 分页获取数据
+     *
      * @param req
      * @return
      */
@@ -62,6 +63,7 @@ public class DocService {
 
     /**
      * 获取全表数据
+     *
      * @return
      */
     public List<DocQueryResp> all() {
@@ -93,5 +95,12 @@ public class DocService {
 
     public void delete(long id) {
         docMapper.deleteByPrimaryKey(id);
+    }
+
+    public void delete(List<Long> ids) {
+        DocExample example = new DocExample();
+        DocExample.Criteria criteria = example.createCriteria();
+        criteria.andIdIn(ids);
+        docMapper.deleteByExample(example);
     }
 }

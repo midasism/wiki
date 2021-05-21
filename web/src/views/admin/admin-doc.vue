@@ -29,17 +29,17 @@
             >
             </a-tree-select>
           </a-form-item>
-<!--          <a-form-item label="父文档">-->
-<!--            <a-select-->
-<!--                v-model:value="Doc.parent"-->
-<!--            >-->
-<!--              <a-select-option value="0">无</a-select-option>-->
-<!--              <a-select-option v-for="c in levelData" :key="c.id" :value="c.id" :disabled="Doc.id === c.id">{{-->
-<!--                  c.name-->
-<!--                }}-->
-<!--              </a-select-option>-->
-<!--            </a-select>-->
-<!--          </a-form-item>-->
+          <!--          <a-form-item label="父文档">-->
+          <!--            <a-select-->
+          <!--                v-model:value="Doc.parent"-->
+          <!--            >-->
+          <!--              <a-select-option value="0">无</a-select-option>-->
+          <!--              <a-select-option v-for="c in levelData" :key="c.id" :value="c.id" :disabled="Doc.id === c.id">{{-->
+          <!--                  c.name-->
+          <!--                }}-->
+          <!--              </a-select-option>-->
+          <!--            </a-select>-->
+          <!--          </a-form-item>-->
           <a-form-item label="顺序">
             <a-input v-model:value="Doc.sort"/>
           </a-form-item>
@@ -217,8 +217,20 @@ export default defineComponent({
     /**
      * 删除
      **/
+    let deleteIds: Array<String> = []
+
     const del = (record: any) => {
-      axios.delete("/doc/delete/" + record.id).then((response) => {
+      getDeleteIds(levelData.value, record.id)
+
+      let IdsStr = ""
+      for (let i = 0; i < deleteIds.length; i++) {
+        IdsStr += deleteIds[i];
+        if (i != deleteIds.length - 1) {
+          IdsStr += ",";
+        }
+      }
+
+      axios.delete("/doc/delete/" + deleteIds.join(",")).then((response) => {
         const data = response.data;
         if (data.success) {
           modalVisible.value = false;
@@ -228,6 +240,29 @@ export default defineComponent({
           handleQuery();
         }
       });
+    }
+
+    /**
+     * 获取待删除节点及子节点的id
+     **/
+    const getDeleteIds = (treeSelectData: any, id: any) => {
+      for (let i = 0; i < treeSelectData.length; i++) {
+        const data = treeSelectData[i];
+        if (data.id == id) {
+          deleteIds.push(data.id)
+          const children = data.children;
+          if (Tool.isNotEmpty(children)) {
+            for (let k = 0; k < children.length; k++) {
+              getDeleteIds(children, children[k].id)
+            }
+          }
+        } else {
+          const children = data.children;
+          if (Tool.isNotEmpty(children)) {
+            getDeleteIds(children, id)
+          }
+        }
+      }
     }
 
 
