@@ -130,15 +130,30 @@ create table `doc`
 ) engine = innodb
   default charset = utf8mb4 comment = '文档';
 
-insert into `doc`(`id`, `ebook_id`, `parent`, `name`, `sort`, `view_count`, `vote_count`)
-values (1, 1, 0, '文档1', 1, 0, 0);
-insert into `doc`(`id`, `ebook_id`, `parent`, `name`, `sort`, `view_count`, `vote_count`)
-values (2, 1, 1, '文档1.1', 1, 0, 0);
-insert into `doc`(`id`, `ebook_id`, `parent`, `name`, `sort`, `view_count`, `vote_count`)
-values (3, 1, 0, '文档2', 2, 0, 0);
-insert into `doc`(`id`, `ebook_id`, `parent`, `name`, `sort`, `view_count`, `vote_count`)
-values (4, 1, 3, '文档2.1', 1, 0, 0);
-insert into `doc`(`id`, `ebook_id`, `parent`, `name`, `sort`, `view_count`, `vote_count`)
-values (5, 1, 3, '文档2.2', 2, 0, 0);
-insert into `doc`(`id`, `ebook_id`, `parent`, `name`, `sort`, `view_count`, `vote_count`)
-values (6, 1, 5, '文档2.2.1', 1, 0, 0);
+    insert into `doc`(`id`, `ebook_id`, `parent`, `name`, `sort`, `view_count`, `vote_count`)
+    values (1, 1, 0, '文档1', 1, 0, 0);
+    insert into `doc`(`id`, `ebook_id`, `parent`, `name`, `sort`, `view_count`, `vote_count`)
+    values (2, 1, 1, '文档1.1', 1, 0, 0);
+    insert into `doc`(`id`, `ebook_id`, `parent`, `name`, `sort`, `view_count`, `vote_count`)
+    values (3, 1, 0, '文档2', 2, 0, 0);
+    insert into `doc`(`id`, `ebook_id`, `parent`, `name`, `sort`, `view_count`, `vote_count`)
+    values (4, 1, 3, '文档2.1', 1, 0, 0);
+    insert into `doc`(`id`, `ebook_id`, `parent`, `name`, `sort`, `view_count`, `vote_count`)
+    values (5, 1, 3, '文档2.2', 2, 0, 0);
+    insert into `doc`(`id`, `ebook_id`, `parent`, `name`, `sort`, `view_count`, `vote_count`)
+    values (6, 1, 5, '文档2.2.1', 1, 0, 0);
+
+
+# 文档内容 content
+# 纵向分表设计：content属于doc的一部分 id也是相同的
+# 横向分表：比如根据日期不同，分成不同的表
+# 大字段一般分表 防止查询时效率太低
+# 原因：MySQL底层通过数据页存储，如果一个记录过大，会导致跨页，造成额外的开销
+drop table if exists `content`;
+create table `content`
+(
+    `id`         bigint not null comment '文档id',
+    `content`   mediumtext not null comment '内容',
+    primary key (`id`)
+) engine = innodb
+  default charset = utf8mb4 comment = '文档内容';
