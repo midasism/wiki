@@ -4,104 +4,112 @@
       <div>
         <h1>文档管理</h1>
       </div>
+      <a-row>
+        <a-col :span="8">
+          <!--顶部工具栏：搜索 添加     -->
+          <a-form layout="inline" :model="searchParam">
+            <a-form-item>
+              <a-input v-model:value="searchParam.name" placeholder="请输入文档名称" @change="SearchChange"
+                       @pressEnter="onSearch"/>
+            </a-form-item>
+            <a-form-item>
+              <a-button type="primary" size="large" @click="onSearch">
+                搜索
+              </a-button>
+            </a-form-item>
+            <a-form-item>
+              <a-button type="primary" size="large" @click="add">
+                新增
+              </a-button>
+            </a-form-item>
+          </a-form>
+          <!--      -->
+
+          <!--数据表格      -->
+          <!-- 只要数据有children属性，是递归结构，表格会自动转化为树型表格     -->
+          <a-table :columns="columns"
+                   :data-source="levelData"
+                   :row-key="record => record.id"
+                   :loading="Loading"
+                   :pagination="false"
+          >
+            <template #cover="{ text:cover }">
+              <img v-if="cover" :src="cover" alt="avatar"/>
+            </template>
+
+            <template v-slot:action="{ text, record }">
+              <a-space size="small">
+                <a-button type="primary" @click="edit(record)">
+                  编辑
+                </a-button>
+                <a-popconfirm
+                    title="确认要删除这个文档吗?"
+                    ok-text="是"
+                    cancel-text="否"
+                    @confirm="del(record)"
+                >
+                  <a-button type="danger">
+                    删除
+                  </a-button>
+                </a-popconfirm>
+              </a-space>
+            </template>
+          </a-table>
+          <!--      -->
+        </a-col>
+        <a-col :span="16">
+          <a-form :model="Doc" :label-col="{ span: 6 }" :wrapper-col="{ span: 18 }">
+            <a-form-item label="名称">
+              <a-input v-model:value="Doc.name"/>
+            </a-form-item>
+            <a-form-item label="父文档">
+              <a-tree-select
+                  v-model:value="Doc.parent"
+                  style="width: 100%"
+                  :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
+                  :tree-data="tempLevelData"
+                  placeholder="请选择父文档"
+                  tree-default-expand-all
+                  :replaceFields="{title:'name',key:'id',value:'id'}"
+              >
+              </a-tree-select>
+            </a-form-item>
+            <!--          <a-form-item label="父文档">-->
+            <!--            <a-select-->
+            <!--                v-model:value="Doc.parent"-->
+            <!--            >-->
+            <!--              <a-select-option value="0">无</a-select-option>-->
+            <!--              <a-select-option v-for="c in levelData" :key="c.id" :value="c.id" :disabled="Doc.id === c.id">{{-->
+            <!--                  c.name-->
+            <!--                }}-->
+            <!--              </a-select-option>-->
+            <!--            </a-select>-->
+            <!--          </a-form-item>-->
+            <a-form-item label="顺序">
+              <a-input v-model:value="Doc.sort"/>
+            </a-form-item>
+            <a-form-item label="内容">
+              <div id="content"></div>
+            </a-form-item>
+
+          </a-form>
+
+        </a-col>
+      </a-row>
 
 
       <!--      编辑对话框-->
-      <a-modal
-          title="Title"
-          v-model:visible="modalVisible"
-          :confirm-loading="modalLoading"
-          @ok="handleModalOk"
-      >
-        <a-form :model="Doc" :label-col="{ span: 6 }" :wrapper-col="{ span: 18 }">
-          <a-form-item label="名称">
-            <a-input v-model:value="Doc.name"/>
-          </a-form-item>
-          <a-form-item label="父文档">
-            <a-tree-select
-                v-model:value="Doc.parent"
-                style="width: 100%"
-                :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
-                :tree-data="tempLevelData"
-                placeholder="请选择父文档"
-                tree-default-expand-all
-                :replaceFields="{title:'name',key:'id',value:'id'}"
-            >
-            </a-tree-select>
-          </a-form-item>
-          <!--          <a-form-item label="父文档">-->
-          <!--            <a-select-->
-          <!--                v-model:value="Doc.parent"-->
-          <!--            >-->
-          <!--              <a-select-option value="0">无</a-select-option>-->
-          <!--              <a-select-option v-for="c in levelData" :key="c.id" :value="c.id" :disabled="Doc.id === c.id">{{-->
-          <!--                  c.name-->
-          <!--                }}-->
-          <!--              </a-select-option>-->
-          <!--            </a-select>-->
-          <!--          </a-form-item>-->
-          <a-form-item label="顺序">
-            <a-input v-model:value="Doc.sort"/>
-          </a-form-item>
-          <a-form-item label="内容">
-            <div id="content"></div>
-          </a-form-item>
+      <!--      <a-modal-->
+      <!--          title="Title"-->
+      <!--          v-model:visible="modalVisible"-->
+      <!--          :confirm-loading="modalLoading"-->
+      <!--          @ok="handleModalOk"-->
+      <!--      >-->
 
-        </a-form>
-      </a-modal>
+      <!--      </a-modal>-->
       <!--      -->
 
 
-      <!--顶部工具栏：搜索 添加     -->
-      <a-form layout="inline" :model="searchParam">
-        <a-form-item>
-          <a-input v-model:value="searchParam.name" placeholder="请输入文档名称" @change="SearchChange"
-                   @pressEnter="onSearch"/>
-        </a-form-item>
-        <a-form-item>
-          <a-button type="primary" size="large" @click="onSearch">
-            搜索
-          </a-button>
-        </a-form-item>
-        <a-form-item>
-          <a-button type="primary" size="large" @click="add">
-            新增
-          </a-button>
-        </a-form-item>
-      </a-form>
-      <!--      -->
-
-      <!--数据表格      -->
-      <!-- 只要数据有children属性，是递归结构，表格会自动转化为树型表格     -->
-      <a-table :columns="columns"
-               :data-source="levelData"
-               :row-key="record => record.id"
-               :loading="Loading"
-               :pagination="false"
-      >
-        <template #cover="{ text:cover }">
-          <img v-if="cover" :src="cover" alt="avatar"/>
-        </template>
-
-        <template v-slot:action="{ text, record }">
-          <a-space size="small">
-            <a-button type="primary" @click="edit(record)">
-              编辑
-            </a-button>
-            <a-popconfirm
-                title="确认要删除这个文档吗?"
-                ok-text="是"
-                cancel-text="否"
-                @confirm="del(record)"
-            >
-              <a-button type="danger">
-                删除
-              </a-button>
-            </a-popconfirm>
-          </a-space>
-        </template>
-      </a-table>
-      <!--      -->
     </a-layout-content>
   </a-layout>
 </template>
@@ -131,7 +139,12 @@ export default defineComponent({
     console.log(route.query.ebookId)
     const param = ref();
     param.value = {};
-    const Doc = ref()
+    const Doc = ref();
+    Doc.value = {
+      name: "",
+      parent: 0,
+      sort: 1
+    }
     const Docs = ref();
     const levelData = ref();
     //编辑时显示的树型数据 剔除了自身节点和子节点 防止形成引用循环 导致节点从树中脱离
@@ -176,10 +189,10 @@ export default defineComponent({
       //最前面增加 无（根节点）
       tempLevelData.value.unshift({id: 0, name: '无'})
 
-      setTimeout(function (){
+      setTimeout(function () {
         const editor = new E('#content')
         editor.create();
-      },100);
+      }, 100);
     };
 
 
@@ -224,10 +237,10 @@ export default defineComponent({
       //最前面增加 无（根节点）
       tempLevelData.value.unshift({id: 0, name: '无'})
 
-      setTimeout(function (){
+      setTimeout(function () {
         const editor = new E('#content')
         editor.create();
-      },100);
+      }, 100);
     }
 
     /**
