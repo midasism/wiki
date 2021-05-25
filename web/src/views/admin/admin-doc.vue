@@ -27,12 +27,15 @@
 
           <!--数据表格      -->
           <!-- 只要数据有children属性，是递归结构，表格会自动转化为树型表格     -->
-          <a-table :columns="columns"
-                   :data-source="levelData"
-                   :row-key="record => record.id"
-                   :loading="Loading"
-                   :pagination="false"
-                   size="small"
+          <a-table
+              v-if="levelData.length > 0"
+              :columns="columns"
+              :data-source="levelData"
+              :row-key="record => record.id"
+              :loading="Loading"
+              :pagination="false"
+              size="small"
+              :defaultExpandAllRows="true"
           >
             <template #name="{ text,record }">
               {{ record.sort }} {{ text }}
@@ -156,6 +159,7 @@ export default defineComponent({
     }
     const Docs = ref();
     const levelData = ref();
+    levelData.value  = []//初始化列表 默认是null 调用length会报错
     //编辑时显示的树型数据 剔除了自身节点和子节点 防止形成引用循环 导致节点从树中脱离
     const tempLevelData = ref();
     tempLevelData.value = []
@@ -182,7 +186,6 @@ export default defineComponent({
         slots: {customRender: 'action'}
       }
     ];
-
 
 
     /**
@@ -224,7 +227,7 @@ export default defineComponent({
      * 编辑/新增-确认
      **/
     const handleSave = () => {
-      modalLoading.value = true;
+      // modalLoading.value = true;
       Doc.value.ebookId = route.query.ebookId
       axios.post("/doc/save", Doc.value).then((response) => {
         const data = response.data;
