@@ -4,7 +4,7 @@
       <div>
         <h1>文档管理</h1>
       </div>
-      <a-row>
+      <a-row :gutter="24">
         <a-col :span="8">
           <!--顶部工具栏：搜索 添加     -->
           <a-form layout="inline" :model="searchParam">
@@ -32,9 +32,10 @@
                    :row-key="record => record.id"
                    :loading="Loading"
                    :pagination="false"
+                   size="small"
           >
-            <template #cover="{ text:cover }">
-              <img v-if="cover" :src="cover" alt="avatar"/>
+            <template #name="{ text,record }">
+              {{ record.sort }} {{ text }}
             </template>
 
             <template v-slot:action="{ text, record }">
@@ -58,7 +59,14 @@
           <!--      -->
         </a-col>
         <a-col :span="16">
-          <a-form :model="Doc" :label-col="{ span: 6 }" :wrapper-col="{ span: 18 }">
+          <p>
+            <a-form layout="inline" :model="param">
+              <a-form-item>
+                <a-button type="primary" @click="handleSave()">保存</a-button>
+              </a-form-item>
+            </a-form>
+          </p>
+          <a-form :model="Doc" :label-col="{ span: 6 }" :wrapper-col="{ span: 18 }" layout="vertical">
             <a-form-item label="名称">
               <a-input v-model:value="Doc.name"/>
             </a-form-item>
@@ -86,9 +94,9 @@
             <!--            </a-select>-->
             <!--          </a-form-item>-->
             <a-form-item label="顺序">
-              <a-input v-model:value="Doc.sort"/>
+              <a-input v-model:value="Doc.sort" placeholder="顺序"/>
             </a-form-item>
-            <a-form-item label="内容">
+            <a-form-item>
               <div id="content"></div>
             </a-form-item>
 
@@ -103,7 +111,7 @@
       <!--          title="Title"-->
       <!--          v-model:visible="modalVisible"-->
       <!--          :confirm-loading="modalLoading"-->
-      <!--          @ok="handleModalOk"-->
+      <!--          @ok="handleSave"-->
       <!--      >-->
 
       <!--      </a-modal>-->
@@ -143,7 +151,8 @@ export default defineComponent({
     Doc.value = {
       name: "",
       parent: 0,
-      sort: 1
+      sort: 1,
+      content: ""
     }
     const Docs = ref();
     const levelData = ref();
@@ -154,24 +163,27 @@ export default defineComponent({
     //wangEditor
 
     const columns = [
-      {
-        title: '父文档',
-        dataIndex: 'parent'
-      },
+      // {
+      //   title: '父文档',
+      //   dataIndex: 'parent'
+      // },
       {
         title: '名称',
-        dataIndex: 'name'
+        dataIndex: 'name',
+        slots: {customRender: 'name'}
       },
-      {
-        title: '排序',
-        dataIndex: 'sort'
-      },
+      // {
+      //   title: '排序',
+      //   dataIndex: 'sort'
+      // },
       {
         title: 'Action',
         key: 'action',
         slots: {customRender: 'action'}
       }
     ];
+
+
 
     /**
      * 编辑按钮
@@ -189,10 +201,11 @@ export default defineComponent({
       //最前面增加 无（根节点）
       tempLevelData.value.unshift({id: 0, name: '无'})
 
-      setTimeout(function () {
-        const editor = new E('#content')
-        editor.create();
-      }, 100);
+      // setTimeout(function () {
+      // const editor = new E('#content')
+      // editor.config.zIndex = 0;
+      // editor.create();
+      // }, 100);
     };
 
 
@@ -210,7 +223,7 @@ export default defineComponent({
     /**
      * 编辑/新增-确认
      **/
-    const handleModalOk = () => {
+    const handleSave = () => {
       modalLoading.value = true;
       Doc.value.ebookId = route.query.ebookId
       axios.post("/doc/save", Doc.value).then((response) => {
@@ -238,8 +251,9 @@ export default defineComponent({
       tempLevelData.value.unshift({id: 0, name: '无'})
 
       setTimeout(function () {
-        const editor = new E('#content')
-        editor.create();
+
+        // editor.config.zIndex = 0;
+        // editor.create();
       }, 100);
     }
 
@@ -408,6 +422,10 @@ export default defineComponent({
     //初始化数据
     onMounted(() => {
       handleQuery();
+
+      const editor = new E('#content')
+      editor.config.zIndex = 0;
+      editor.create();
     });
 
     return {
@@ -419,7 +437,7 @@ export default defineComponent({
       modalVisible,
       Doc,
       handleOk,
-      handleModalOk,
+      handleSave,
       modalLoading,
 
       add,
