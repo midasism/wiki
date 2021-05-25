@@ -12,7 +12,7 @@
           ></a-tree>
         </a-col>
         <a-col :span="18">
-
+          <div :innerHTML="html"></div>
         </a-col>
       </a-row>
     </a-layout-content>
@@ -41,8 +41,8 @@ export default defineComponent({
   setup() {
     //路由内置参数 包含路由信息
     const route = useRoute()
-    const Docs = ref();
-    // Docs.value = []
+    const Docs = ref()
+    const html = ref()
     const levelData = ref();
     levelData.value = []//初始化列表 默认是null 调用length会报错
 
@@ -62,6 +62,27 @@ export default defineComponent({
       });
     };
 
+    /**
+     * 文档内容查询
+     **/
+    const handleQueryContent = (id: Number) => {
+      axios.get("/doc/find-content/" + id).then((response) => {
+        const data = response.data;
+        if (data.success) {
+          html.value = data.content
+        } else {
+          message.error(data.message);
+        }
+      });
+    };
+
+    const onSelect = (selectedKeys: any, info: any) => {
+      console.log("selected", selectedKeys, info)
+      if (Tool.isNotEmpty(selectedKeys)) {
+        handleQueryContent(selectedKeys[0])
+      }
+    }
+
 
     //初始化数据
     onMounted(() => {
@@ -70,7 +91,9 @@ export default defineComponent({
 
     return {
       Docs,
-      levelData
+      levelData,
+      html,
+      onSelect
     }
   }
 });
