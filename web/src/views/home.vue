@@ -5,8 +5,6 @@
         <a-layout-sider width="200" style="background: #fff">
           <a-menu
               mode="inline"
-              :default-selected-keys="['1']"
-              :defalut-open-keys="['2']"
               style="height: 100%"
           >
             <a-menu-item key="welcome" @click="MenuClick">
@@ -21,7 +19,6 @@
               </template>
 
               <a-menu-item v-for="c2 in c.children" :key="c2.id" @click="MenuClick">
-                <!--                <PieChartOutlined/>-->
                 <span>{{ c2.name }}</span>
               </a-menu-item>
             </a-sub-menu>
@@ -44,7 +41,9 @@
                 </template>
                 <a-list-item-meta :description="item.description">
                   <template #title>
-                    <a :href="item.href">{{ item.name }}</a>
+                    <!--电子书名称-->
+                    <router-link :to="'/doc?ebookId='+item.id">{{ item.name }}</router-link>
+                    <!--                    <a :href="item.href"></a>-->
                   </template>
                   <template #avatar>
                     <a-avatar :src="item.cover"/>
@@ -88,8 +87,6 @@ export default defineComponent({
     //树型数据
     const categoryValue = ref()
 
-    const openKeys = ref()
-    const selectedKeys = ref()
 
     const isShowWelcome = ref(true)
 
@@ -178,11 +175,4 @@ export default defineComponent({
 
 <!--只在当前组件生效-->
 <style scoped>
-.ant-avatar {
-  width: 50px;
-  height: 50px;
-  line-height: 50px;
-  border-radius: 8%;
-  margin: 5px 0;
-}
 </style>
