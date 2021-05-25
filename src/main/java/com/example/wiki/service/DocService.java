@@ -71,9 +71,13 @@ public class DocService {
      *
      * @return
      */
-    public List<DocQueryResp> all() {
+    public List<DocQueryResp> all(Long id) {
         DocExample example = new DocExample();
         example.setOrderByClause("sort asc");
+        //        //相当于where语句
+        DocExample.Criteria criteria = example.createCriteria();
+        //实现：根据id查询
+        criteria.andEbookIdEqualTo(id);
         List<Doc> docs = docMapper.selectByExample(example);
         List<DocQueryResp> dataList = CopyUtil.copyList(docs, DocQueryResp.class);
         return dataList;

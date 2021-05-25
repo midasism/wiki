@@ -30,10 +30,10 @@ public class DocController {
         return resp;
     }
 
-    @RequestMapping("/all")
-    public CommonResp all() {
+    @RequestMapping("/all/{ebookId}")
+    public CommonResp all(@PathVariable Long ebookId) {
         CommonResp<List<DocQueryResp>> resp = new CommonResp<>();
-        List<DocQueryResp> all = docService.all();
+        List<DocQueryResp> all = docService.all(ebookId);
         resp.setContent(all);
         return resp;
     }
@@ -59,9 +59,9 @@ public class DocController {
     }
 
     @GetMapping("/find-content/{id}")
-    public CommonResp findContent(@PathVariable String id) {
+    public CommonResp findContent(@PathVariable Long id) {
         CommonResp<String> resp = new CommonResp<>();
-        String content = docService.findContent(Long.parseLong(id));
+        String content = docService.findContent(id);
         resp.setContent(content);
         return resp;
     }
