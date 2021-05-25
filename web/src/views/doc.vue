@@ -1,6 +1,7 @@
 <template>
   <a-layout>
     <a-layout-content :style="{ background:'#fff',padding:'24px',margin:0,minHeight:'280px'}">
+      <h2 v-if="levelData.length == 0">此电子书无文档！</h2>
       <a-row>
         <a-col :span="6">
           <a-tree
