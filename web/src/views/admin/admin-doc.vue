@@ -85,19 +85,16 @@
               >
               </a-tree-select>
             </a-form-item>
-            <!--          <a-form-item label="父文档">-->
-            <!--            <a-select-->
-            <!--                v-model:value="Doc.parent"-->
-            <!--            >-->
-            <!--              <a-select-option value="0">无</a-select-option>-->
-            <!--              <a-select-option v-for="c in levelData" :key="c.id" :value="c.id" :disabled="Doc.id === c.id">{{-->
-            <!--                  c.name-->
-            <!--                }}-->
-            <!--              </a-select-option>-->
-            <!--            </a-select>-->
-            <!--          </a-form-item>-->
             <a-form-item label="顺序">
               <a-input v-model:value="Doc.sort" placeholder="顺序"/>
+            </a-form-item>
+            <a-form-item>
+              <a-button type="primary" @click="previewContent()">
+                <template #icon>
+                  <SearchOutlined/>
+                </template>
+                预览
+              </a-button>
             </a-form-item>
             <a-form-item>
               <div id="content"></div>
@@ -108,18 +105,15 @@
         </a-col>
       </a-row>
 
-
-      <!--      编辑对话框-->
-      <!--      <a-modal-->
-      <!--          title="Title"-->
-      <!--          v-model:visible="modalVisible"-->
-      <!--          :confirm-loading="modalLoading"-->
-      <!--          @ok="handleSave"-->
-      <!--      >-->
-
-      <!--      </a-modal>-->
-      <!--      -->
-
+      <a-drawer
+          placement="right"
+          :closable="false"
+          v-model:visible="previewVisible"
+          @close="previewClose"
+          width="900"
+      >
+        <div class="wangeditor" :innerHTML="previewHtml"></div>
+      </a-drawer>
 
     </a-layout-content>
   </a-layout>
@@ -165,7 +159,6 @@ export default defineComponent({
     tempLevelData.value = []
     const loading = ref(false);
     //wangEditor
-    // const editor=ref()
     let editor: E
     const columns = [
       // {
@@ -446,6 +439,23 @@ export default defineComponent({
     };
 
 
+    //预览文档
+    const previewHtml = ref()
+    const previewVisible = ref(false)
+    /**
+     * 点击预览按钮进行文档预览
+     */
+    const previewContent = () => {
+      const html = editor.txt.html()
+      previewHtml.value = html
+      previewVisible.value = true
+    };
+
+    const previewClose = () => {
+      previewVisible.value = false
+    };
+
+
     //初始化数据
     onMounted(() => {
       handleQuery();
@@ -480,6 +490,11 @@ export default defineComponent({
       levelData,
 
       tempLevelData,
+
+      previewContent,
+      previewHtml,
+      previewVisible,
+      previewClose,
 
     }
   }
