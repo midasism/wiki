@@ -71,7 +71,7 @@
           </p>
           <a-form :model="Doc" :label-col="{ span: 6 }" :wrapper-col="{ span: 18 }" layout="vertical">
             <a-form-item label="名称">
-              <a-input v-model:value="Doc.name"/>
+              <a-input v-model:value="Doc.name" placeholder="请输入文档名称"/>
             </a-form-item>
             <a-form-item label="父文档">
               <a-tree-select
@@ -201,6 +201,8 @@ export default defineComponent({
       //Doc是对话框展示的数据 不直接使用列表的展示数据record 在对话框里的修改不会实时同步到列表
       tempLevelData.value = Tool.copy(levelData.value)
       Doc.value = Tool.copy(record)
+      //查询文档内容
+      handleQueryContent()
       setDisable(tempLevelData.value, record.id)
       //最前面增加 无（根节点）
       tempLevelData.value.unshift({id: 0, name: '无'})
@@ -251,6 +253,7 @@ export default defineComponent({
     const add = () => {
       modalVisible.value = true;
       Doc.value = {}
+      editor.txt.html("")
       tempLevelData.value = Tool.copy(levelData.value)
       //最前面增加 无（根节点）
       tempLevelData.value.unshift({id: 0, name: '无'})
@@ -355,7 +358,22 @@ export default defineComponent({
           Docs.value = data.content
           levelData.value = []
           levelData.value = Tool.arrayTree(Docs.value, 0)
-          console.log(levelData)
+        } else {
+          message.error(data.message);
+        }
+      });
+    };
+
+
+    /**
+     * 内容查询
+     **/
+    const handleQueryContent = () => {
+      axios.get("/doc/find-content/" + Doc.value.id).then((response) => {
+        const data = response.data;
+        if (data.success) {
+          //将查询到的内容放到富文本框
+          editor.txt.html(data.content)
         } else {
           message.error(data.message);
         }
