@@ -1,7 +1,9 @@
 package com.example.wiki.service;
 
+import com.example.wiki.entity.Content;
 import com.example.wiki.entity.Doc;
 import com.example.wiki.entity.DocExample;
+import com.example.wiki.mapper.ContentMapper;
 import com.example.wiki.mapper.DocMapper;
 import com.example.wiki.req.DocQueryReq;
 import com.example.wiki.req.DocSaveReq;
@@ -26,6 +28,9 @@ public class DocService {
 
     @Resource
     private DocMapper docMapper;
+
+    @Resource
+    private ContentMapper contentMapper;
 
     @Resource
     private SnowFlake snowFlake;
@@ -81,15 +86,26 @@ public class DocService {
      */
     public void save(DocSaveReq req) {
         Doc doc = CopyUtil.copy(req, Doc.class);
+        Content content = CopyUtil.copy(req, Content.class);
         //id为空：新增
         if (ObjectUtils.isEmpty(req.getId())) {
             long id = snowFlake.nextId();
             doc.setId(id);
             docMapper.insert(doc);
+            content.setId(id);
+            contentMapper.insert(content);
         }
         //id不为空：更新
         else {
             docMapper.updateByPrimaryKey(doc);
+            //富文本更新 大字段
+            Content content1 = contentMapper.selectByPrimaryKey(doc.getId());
+            if (content1 == null) {
+                content.setId(doc.getId());
+                contentMapper.insert(content);
+            } else {
+                contentMapper.updateByPrimaryKeyWithBLOBs(content);
+            }
         }
     }
 

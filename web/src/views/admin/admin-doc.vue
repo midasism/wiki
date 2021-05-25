@@ -159,13 +159,14 @@ export default defineComponent({
     }
     const Docs = ref();
     const levelData = ref();
-    levelData.value  = []//初始化列表 默认是null 调用length会报错
+    levelData.value = []//初始化列表 默认是null 调用length会报错
     //编辑时显示的树型数据 剔除了自身节点和子节点 防止形成引用循环 导致节点从树中脱离
     const tempLevelData = ref();
     tempLevelData.value = []
     const loading = ref(false);
     //wangEditor
-
+    // const editor=ref()
+    let editor: E
     const columns = [
       // {
       //   title: '父文档',
@@ -229,6 +230,7 @@ export default defineComponent({
     const handleSave = () => {
       // modalLoading.value = true;
       Doc.value.ebookId = route.query.ebookId
+      Doc.value.content = editor.txt.html()
       axios.post("/doc/save", Doc.value).then((response) => {
         const data = response.data;
         modalLoading.value = false;
@@ -252,12 +254,6 @@ export default defineComponent({
       tempLevelData.value = Tool.copy(levelData.value)
       //最前面增加 无（根节点）
       tempLevelData.value.unshift({id: 0, name: '无'})
-
-      setTimeout(function () {
-
-        // editor.config.zIndex = 0;
-        // editor.create();
-      }, 100);
     }
 
     /**
@@ -426,7 +422,8 @@ export default defineComponent({
     onMounted(() => {
       handleQuery();
 
-      const editor = new E('#content')
+      // const editor = new E('#content')
+      editor = new E("#content")
       editor.config.zIndex = 0;
       editor.create();
     });
@@ -455,6 +452,8 @@ export default defineComponent({
       levelData,
 
       tempLevelData,
+
+
     }
   }
 });
