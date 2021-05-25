@@ -356,13 +356,17 @@ export default defineComponent({
      **/
     const handleQuery = () => {
       loading.value = true;
-      axios.get("/doc/all").then((response) => {
+      axios.get("/doc/all/" + route.query.ebookId).then((response) => {
         loading.value = false;
         const data = response.data;
         if (data.success) {
           Docs.value = data.content
           levelData.value = []
           levelData.value = Tool.arrayTree(Docs.value, 0)
+          //页面刚加载出来时就加载父文档结构，节省点击新增按钮的操作
+          tempLevelData.value = Tool.copy(levelData.value)
+          //最前面增加 无（根节点）
+          tempLevelData.value.unshift({id: 0, name: '无'})
         } else {
           message.error(data.message);
         }
