@@ -197,6 +197,8 @@ export default defineComponent({
     const modalLoading = ref<boolean>(false);
 
     const edit = (record: any) => {
+      //清空富文本框
+      editor.txt.html("")
       modalVisible.value = true;
       //Doc是对话框展示的数据 不直接使用列表的展示数据record 在对话框里的修改不会实时同步到列表
       tempLevelData.value = Tool.copy(levelData.value)
@@ -226,6 +228,7 @@ export default defineComponent({
       }, 2000);
     };
 
+
     /**
      * 编辑/新增-确认
      **/
@@ -237,6 +240,8 @@ export default defineComponent({
         const data = response.data;
         modalLoading.value = false;
         if (data.success) {
+          //成功提示框
+          message.success('保存成功');
           modalVisible.value = false;
           //重新加载列表
           handleQuery();
@@ -380,6 +385,7 @@ export default defineComponent({
       });
     };
 
+
     /**
      * 递归设置当前文档及子文档为不可选 防止一个文档选择自己子文档为父文档，造成引用循环
      **/
@@ -470,7 +476,6 @@ export default defineComponent({
       levelData,
 
       tempLevelData,
-
 
     }
   }
