@@ -22,7 +22,10 @@
       <a-menu-item key="5">
         <router-link to="/about">关于我们</router-link>
       </a-menu-item>
-      <a class="login-button" @click="loginModel">
+      <a class="login-button" v-if="user.loginName">
+        <span>您好：{{ user.loginName }}</span>
+      </a>
+      <a class="login-button" @click="loginModel" v-if="!user.loginName">
         <span>登录</span>
       </a>
     </a-menu>
@@ -59,6 +62,10 @@ export default defineComponent({
   setup() {
     const loginModalVisible = ref(false)
     const loginModalLoading = ref(false)
+    //登录成功后从后端接收到的用户信息
+    const user = ref();
+    user.value = {};
+    //登录使用
     const loginUser = ref({
       loginName: "",
       password: ""
@@ -75,6 +82,7 @@ export default defineComponent({
         const data = response.data;
         loginModalLoading.value = false;
         if (data.success) {
+          user.value = data.content
           loginModalVisible.value = false;
           loginSuccess()
         } else {
@@ -102,6 +110,7 @@ export default defineComponent({
       loginModalVisible,
       loginModalLoading,
       loginUser,
+      user,
       login,
       loginModel,
 
