@@ -5,9 +5,11 @@ import com.example.wiki.entity.UserExample;
 import com.example.wiki.exception.BusinessException;
 import com.example.wiki.exception.BusinessExceptionCode;
 import com.example.wiki.mapper.UserMapper;
+import com.example.wiki.req.UserLoginReq;
 import com.example.wiki.req.UserQueryReq;
 import com.example.wiki.req.UserResetPasswordReq;
 import com.example.wiki.req.UserSaveReq;
+import com.example.wiki.resp.UserLoginResp;
 import com.example.wiki.resp.UserQueryResp;
 import com.example.wiki.resp.PageResp;
 import com.example.wiki.util.CopyUtil;
@@ -110,5 +112,26 @@ public class UserService {
         User user = CopyUtil.copy(req, User.class);
         //存在的字段才会更新
         userMapper.updateByPrimaryKeySelective(user);
+    }
+
+    public UserLoginResp login(UserLoginReq req) {
+        User user = selectUserByLoginName(req.getLoginName());
+        //用户不存在
+        if (ObjectUtils.isEmpty(user)) {
+            //打印日志
+            LOG.info("用户名不存在：{}", req.getLoginName());
+            throw new BusinessException(BusinessExceptionCode.LOGIN_USER_ERROR);
+        } else {
+            //登录成功
+            if (user.getPassword().equals(req.getPassword())) {
+                UserLoginResp copy = CopyUtil.copy(user, UserLoginResp.class);
+                return copy;
+            } else {
+                //密码不匹配
+                //可以加个功能：尝试五块就拒绝登录 防止恶意碰撞密码
+                LOG.info("数据库密码：{}   用户输入密码：{}", user.getPassword(), req.getPassword());
+                throw new BusinessException(BusinessExceptionCode.LOGIN_USER_ERROR);
+            }
+        }
     }
 }
