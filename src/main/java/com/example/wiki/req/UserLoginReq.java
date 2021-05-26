@@ -1,11 +1,18 @@
 package com.example.wiki.req;
 
+import javax.validation.constraints.NotEmpty;
+
 /**
  * 查询用户-请求参数
  */
 public class UserLoginReq extends PageReq {
+    /**
+     * null和空字符串都不符合
+     */
+    @NotEmpty(message = "用户名不能为空")
     private String loginName;
 
+    @NotEmpty(message = "密码不能为空")
     private String password;
 
     public String getLoginName() {
