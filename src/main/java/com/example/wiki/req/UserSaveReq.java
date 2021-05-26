@@ -1,7 +1,6 @@
 package com.example.wiki.req;
 
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
 
 /**
  * 保存电子书-请求参数
@@ -17,7 +16,7 @@ public class UserSaveReq {
 
     @NotNull(message = "密码不能为空")
 //    @Length(min = 6, max = 20, message = "密码长度6～20位")
-    @Pattern(regexp = "^(?![0-9]+$)(?![a-zA-Z]+$)([0-9A-za-z]{6,20}$)", message = "密码至少包含数字、英文，长度6～20位")
+//    @Pattern(regexp = "^(?![0-9]+$)(?![a-zA-Z]+$)([0-9A-za-z]{6,20}$)", message = "密码至少包含数字、英文，长度6～20位")
     private String password;
 
     public Long getId() {

@@ -87,6 +87,9 @@ import {message, Modal} from 'ant-design-vue';
 import {Tool} from "@/util/tool";
 //全局提示
 
+declare let hexMd5: any
+declare let KEY: any
+
 
 export default defineComponent({
   name: 'AdminUser',
@@ -124,7 +127,7 @@ export default defineComponent({
       {
         title: 'Action',
         key: 'action',
-        slots: { customRender: 'action' }
+        slots: {customRender: 'action'}
       }
     ];
 
@@ -147,7 +150,8 @@ export default defineComponent({
      **/
     const handleModalOk = () => {
       modalLoading.value = true;
-      //保存的时候将分类数组拆分成两个字段
+      //KEY 盐值
+      user.value.password = hexMd5(user.value.password + KEY)
       axios.post("/user/save", user.value).then((response) => {
         const data = response.data;
         modalLoading.value = false;

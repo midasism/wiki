@@ -3,9 +3,10 @@ package com.example.wiki.controller;
 import com.example.wiki.req.UserQueryReq;
 import com.example.wiki.req.UserSaveReq;
 import com.example.wiki.resp.CommonResp;
-import com.example.wiki.resp.UserQueryResp;
 import com.example.wiki.resp.PageResp;
+import com.example.wiki.resp.UserQueryResp;
 import com.example.wiki.service.UserService;
+import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -29,6 +30,8 @@ public class UserController {
 
     @PostMapping("/save")
     public CommonResp save(@Valid @RequestBody UserSaveReq req) {
+        //将密码用md5加密后再存储到数据库
+        req.setPassword(DigestUtils.md5DigestAsHex(req.getPassword().getBytes()));
         CommonResp resp = new CommonResp<>();
         userService.save(req);
         return resp;
