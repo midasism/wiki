@@ -1,10 +1,12 @@
 package com.example.wiki.req;
 
 /**
- * 删除电子书-请求参数
+ * 查询用户-请求参数
  */
-public class EbookDeleteReq {
+public class UserQueryReq extends PageReq {
     private Long id;
+
+    private String loginName;
 
     public Long getId() {
         return id;
@@ -14,6 +16,13 @@ public class EbookDeleteReq {
         this.id = id;
     }
 
+    public String getLoginName() {
+        return loginName;
+    }
+
+    public void setLoginName(String loginName) {
+        this.loginName = loginName;
+    }
 
     @Override
     public String toString() {
@@ -22,6 +31,7 @@ public class EbookDeleteReq {
         sb.append(" [");
         sb.append("Hash = ").append(hashCode());
         sb.append(", id=").append(id);
+        sb.append(", loginName=").append(loginName);
         sb.append("]");
         return sb.toString();
     }

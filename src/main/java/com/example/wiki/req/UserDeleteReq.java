@@ -1,9 +1,9 @@
 package com.example.wiki.req;
 
 /**
- * 删除电子书-请求参数
+ * 删除用户请求参数
  */
-public class EbookDeleteReq {
+public class UserDeleteReq {
     private Long id;
 
     public Long getId() {
