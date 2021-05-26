@@ -77,7 +77,7 @@ public class UserController {
         UserLoginResp userLoginResp = userService.login(req);
 
         Long token = snowFlake.nextId();
-        LOG.info("生成单点登录token{}，存入redis 时间设为24小时", token);
+        LOG.info("生成单点登录token {}，存入redis 时间设为24小时", token);
         //将一个类放入redis 需要支持序列化
         //也可以直接将对象转化为json数据 就不需要序列化了  JSONObject.toJSONString(userLoginResp)
         redisTemplate.opsForValue().set(token, userLoginResp, 3600 * 24, TimeUnit.SECONDS);
