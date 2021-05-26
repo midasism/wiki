@@ -1,11 +1,15 @@
 package com.example.wiki.resp;
 
-public class UserLoginResp {
+import java.io.Serializable;
+
+public class UserLoginResp implements Serializable {
     private Long id;
 
     private String loginName;
 
     private String name;
+
+    private String token;
 
     public Long getId() {
         return id;
@@ -31,6 +35,14 @@ public class UserLoginResp {
         this.name = name;
     }
 
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -40,6 +52,7 @@ public class UserLoginResp {
         sb.append(", id=").append(id);
         sb.append(", loginName=").append(loginName);
         sb.append(", name=").append(name);
+        sb.append(", token=").append(token);
         sb.append("]");
         return sb.toString();
     }
