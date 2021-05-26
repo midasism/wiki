@@ -6,6 +6,7 @@ import com.example.wiki.exception.BusinessException;
 import com.example.wiki.exception.BusinessExceptionCode;
 import com.example.wiki.mapper.UserMapper;
 import com.example.wiki.req.UserQueryReq;
+import com.example.wiki.req.UserResetPasswordReq;
 import com.example.wiki.req.UserSaveReq;
 import com.example.wiki.resp.UserQueryResp;
 import com.example.wiki.resp.PageResp;
@@ -65,11 +66,11 @@ public class UserService {
         //id为空：新增
         if (ObjectUtils.isEmpty(req.getId())) {
             //用户名没有重复
-            if(ObjectUtils.isEmpty(selectUserByLoginName(req.getLoginName()))){
+            if (ObjectUtils.isEmpty(selectUserByLoginName(req.getLoginName()))) {
                 long id = snowFlake.nextId();
                 user.setId(id);
                 userMapper.insert(user);
-            }else{
+            } else {
                 //用户名重复 报错
                 throw new BusinessException(BusinessExceptionCode.USER_LOGIN_NAME_EXIST);
             }
@@ -98,5 +99,16 @@ public class UserService {
         } else {
             return users.get(0);
         }
+    }
+
+    /**
+     * 修改密码
+     *
+     * @param req：请求参数
+     */
+    public void resetPassword(UserResetPasswordReq req) {
+        User user = CopyUtil.copy(req, User.class);
+        //存在的字段才会更新
+        userMapper.updateByPrimaryKeySelective(user);
     }
 }

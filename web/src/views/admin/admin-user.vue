@@ -29,6 +29,22 @@
       <!--      -->
 
 
+      <!--      重置密码 对话框-->
+      <a-modal
+          title="Title"
+          v-model:visible="resetModalVisible"
+          :confirm-loading="resetModalLoading"
+          @ok="handleResetModalOk"
+      >
+        <a-form :model="user" :label-col="{ span: 6 }" :wrapper-col="{ span: 18 }">
+          <a-form-item label="密码">
+            <a-input v-model:value="user.password"/>
+          </a-form-item>
+        </a-form>
+      </a-modal>
+      <!--      -->
+
+
       <!--顶部工具栏：搜索 添加     -->
       <a-form layout="inline" :model="searchParam">
         <a-form-item>
@@ -61,6 +77,9 @@
           <a-space size="small">
             <a-button type="primary" @click="edit(record)">
               编辑
+            </a-button>
+            <a-button type="primary" @click="resetPassword(record)">
+              重置密码
             </a-button>
             <a-popconfirm
                 title="确认要删除这个用户吗?"
@@ -145,7 +164,6 @@ export default defineComponent({
       user.value = Tool.copy(record)
     };
 
-
     /**
      * 编辑/新增-确认
      **/
@@ -168,6 +186,44 @@ export default defineComponent({
         }
       });
     }
+
+
+    /**
+     * 重置密码按钮
+     **/
+    const resetModalVisible = ref<boolean>(false);
+    const resetModalLoading = ref<boolean>(false);
+
+    const resetPassword = (record: any) => {
+      resetModalVisible.value = true;
+      //user是对话框展示的数据 不直接使用列表的展示数据record 在对话框里的修改不会实时同步到列表
+      user.value = Tool.copy(record)
+      user.value.password = null
+    };
+
+    /**
+     * 重置密码 确认
+     **/
+    const handleResetModalOk = () => {
+      resetModalLoading.value = true;
+      //KEY 盐值
+      user.value.password = hexMd5(user.value.password + KEY)
+      axios.post("/user/reset-password", user.value).then((response) => {
+        const data = response.data;
+        resetModalLoading.value = false;
+        if (data.success) {
+          resetModalVisible.value = false;
+          //重新加载列表
+          handleQuery({
+            page: pagination.value.current,
+            size: pagination.value.pageSize
+          });
+        } else {
+          message.error(data.message)
+        }
+      });
+    }
+
 
     /**
      * 新增按钮
@@ -294,6 +350,11 @@ export default defineComponent({
       inputValue,
       onSearch,
       SearchChange,
+
+      resetModalVisible,
+      resetModalLoading,
+      resetPassword,
+      handleResetModalOk,
 
     }
   }
