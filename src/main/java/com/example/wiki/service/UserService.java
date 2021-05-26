@@ -77,6 +77,7 @@ public class UserService {
         //id不为空：更新
         else {
             user.setLoginName(null);
+            user.setPassword(null);
             //存在的字段才会更新
             userMapper.updateByPrimaryKeySelective(user);
         }
