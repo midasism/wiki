@@ -2,6 +2,8 @@ package com.example.wiki.service;
 
 import com.example.wiki.entity.User;
 import com.example.wiki.entity.UserExample;
+import com.example.wiki.exception.BusinessException;
+import com.example.wiki.exception.BusinessExceptionCode;
 import com.example.wiki.mapper.UserMapper;
 import com.example.wiki.req.UserQueryReq;
 import com.example.wiki.req.UserSaveReq;
@@ -62,9 +64,15 @@ public class UserService {
         User user = CopyUtil.copy(req, User.class);
         //id为空：新增
         if (ObjectUtils.isEmpty(req.getId())) {
-            long id = snowFlake.nextId();
-            user.setId(id);
-            userMapper.insert(user);
+            //用户名没有重复
+            if(ObjectUtils.isEmpty(selectUserByLoginName(req.getLoginName()))){
+                long id = snowFlake.nextId();
+                user.setId(id);
+                userMapper.insert(user);
+            }else{
+                //用户名重复 报错
+                throw new BusinessException(BusinessExceptionCode.USER_LOGIN_NAME_EXIST);
+            }
         }
         //id不为空：更新
         else {
@@ -74,5 +82,18 @@ public class UserService {
 
     public void delete(long id) {
         userMapper.deleteByPrimaryKey(id);
+    }
+
+    public User selectUserByLoginName(String loginName) {
+        UserExample example = new UserExample();
+        //相当于where语句
+        UserExample.Criteria criteria = example.createCriteria();
+        criteria.andLoginNameEqualTo(loginName);
+        List<User> users = userMapper.selectByExample(example);
+        if (ObjectUtils.isEmpty(users)) {
+            return null;
+        } else {
+            return users.get(0);
+        }
     }
 }
