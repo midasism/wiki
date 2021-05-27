@@ -22,9 +22,19 @@
       <a-menu-item key="5">
         <router-link to="/about">关于我们</router-link>
       </a-menu-item>
+      <a-popconfirm
+          title="确认要退出登录吗?"
+          ok-text="是"
+          cancel-text="否"
+          @confirm="logout"
+      >
+        <a class="login-button" v-if="user.loginName">
+          <span>退出登录</span>
+        </a>
       <a class="login-button" v-if="user.name">
         <span>您好：{{ user.name }}</span>
       </a>
+      </a-popconfirm>
       <a class="login-button" @click="loginModel" v-if="!user.loginName">
         <span>登录</span>
       </a>
@@ -94,6 +104,21 @@ export default defineComponent({
     }
 
     /**
+     * 退出登录 清空用户信息
+     **/
+    const logout = () => {
+      axios.get("/user/logout/" + user.value.token).then((response) => {
+        const data = response.data;
+        if (data.success) {
+          message.success("退出登录成功!")
+          store.commit("setUser",{})
+        } else {
+          message.error(data.message)
+        }
+      });
+    }
+
+    /**
      * 显示登录框
      */
     const loginModel = () => {
@@ -116,6 +141,7 @@ export default defineComponent({
       login,
       loginModel,
 
+      logout,
     }
   }
 });
@@ -125,6 +151,6 @@ export default defineComponent({
 .login-button {
   float: right;
   color: white;
-  padding-left: 10px;
+  padding-left: 20px;
 }
 </style>
