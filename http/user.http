@@ -28,3 +28,7 @@ Content-Type: application/json
 }
 
 ###
+GET http://localhost:8081/user/logout/20359600725430272
+Accept: application/json
+
+###

@@ -31,9 +31,9 @@
         <a class="login-button" v-if="user.loginName">
           <span>退出登录</span>
         </a>
-      <a class="login-button" v-if="user.name">
-        <span>您好：{{ user.name }}</span>
-      </a>
+        <a class="login-button" v-if="user.name">
+          <span>您好：{{ user.name }}</span>
+        </a>
       </a-popconfirm>
       <a class="login-button" @click="loginModel" v-if="!user.loginName">
         <span>登录</span>
@@ -107,11 +107,13 @@ export default defineComponent({
      * 退出登录 清空用户信息
      **/
     const logout = () => {
-      axios.get("/user/logout/" + user.value.token).then((response) => {
+      //将token存入header
+      // axios.defaults.headers.common["token"] = store.state.user.token;
+      axios.get("/user/logout/" + store.state.user.token).then((response) => {
         const data = response.data;
         if (data.success) {
           message.success("退出登录成功!")
-          store.commit("setUser",{})
+          store.commit("setUser", {})
         } else {
           message.error(data.message)
         }

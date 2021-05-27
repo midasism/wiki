@@ -80,7 +80,7 @@ public class UserController {
         LOG.info("生成单点登录token {}，存入redis 时间设为24小时", token);
         //将一个类放入redis 需要支持序列化
         //也可以直接将对象转化为json数据 就不需要序列化了  JSONObject.toJSONString(userLoginResp)
-        redisTemplate.opsForValue().set(token, userLoginResp, 3600 * 24, TimeUnit.SECONDS);
+        redisTemplate.opsForValue().set(token.toString(), userLoginResp, 3600 * 24, TimeUnit.SECONDS);
         userLoginResp.setToken(token.toString());
 
         resp.setContent(userLoginResp);
@@ -88,9 +88,10 @@ public class UserController {
     }
 
     @GetMapping("/logout/{token}")
-    public CommonResp login(@PathVariable String token) {
+    public CommonResp logout(@PathVariable String token) {
         CommonResp resp = new CommonResp<>();
         redisTemplate.delete(token);
+
         LOG.info("从redis中删除token：{}",token);
         return resp;
     }
