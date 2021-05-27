@@ -88,6 +88,9 @@ export default defineComponent({
      **/
     const login = () => {
       loginModalLoading.value = true;
+      //前端校验密码是否合理
+
+
       //KEY 盐值  前端第一次加密
       loginUser.value.password = hexMd5(loginUser.value.password + KEY)
       axios.post("/user/login", loginUser.value).then((response) => {

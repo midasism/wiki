@@ -39,15 +39,15 @@ create table `ebook`
     `category2_id` bigint comment '分类2',
     `description`  varchar(200) comment '描述',
     `cover`        varchar(200) comment '封面',
-    `doc_count`    int comment '文档数',
-    `view_count`   int comment '阅读数',
-    `vote_count`   int comment '点赞数',
+    `doc_count`    int default 0 comment '文档数',
+    `view_count`   int default 0 comment '阅读数',
+    `vote_count`   int default 0 comment '点赞数',
     primary key (`id`)
 ) engine = innodb
   default charset = utf8mb4 comment = '电子书';
 
-delete
-from `ebook`;
+# delete
+# from `ebook`;
 
 insert into `ebook` (`id`, `name`, `category1_id`, `category2_id`, `description`, `cover`, `doc_count`, `view_count`,
                      `vote_count`)
@@ -172,4 +172,5 @@ create table `content`
     ) engine = innodb
       default charset = utf8mb4 comment = '用户';
 
-insert into `user` (`id`,`login_name`,`name`,`password`) values(1,'test','测试','test')
+insert into `user` (`id`,`login_name`,`name`,`password`) values(1,'test','测试','test');
+insert into `user` (`id`,`login_name`,`name`,`password`) values(2,'aaa','测试','aaa');
