@@ -1,7 +1,7 @@
 <template>
   <a-layout-footer style="text-align: center">
     Midas的电子书
-    欢迎：{{ user.name }}
+    <div v-if="user.loginName">欢迎：{{ user.name }}</div>
   </a-layout-footer>
 </template>
 

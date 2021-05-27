@@ -22,8 +22,8 @@
       <a-menu-item key="5">
         <router-link to="/about">关于我们</router-link>
       </a-menu-item>
-      <a class="login-button" v-if="user.loginName">
-        <span>您好：{{ user.loginName }}</span>
+      <a class="login-button" v-if="user.name">
+        <span>您好：{{ user.name }}</span>
       </a>
       <a class="login-button" @click="loginModel" v-if="!user.loginName">
         <span>登录</span>
@@ -49,7 +49,7 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, ref} from 'vue';
+import {computed, defineComponent, ref} from 'vue';
 import axios from "axios";
 import {message} from "ant-design-vue";
 import store from "@/store";
@@ -64,8 +64,9 @@ export default defineComponent({
     const loginModalVisible = ref(false)
     const loginModalLoading = ref(false)
     //登录成功后从后端接收到的用户信息
-    const user = ref();
-    user.value = {};
+    const user = computed(() =>
+        store.state.user
+    )
     //登录使用
     const loginUser = ref({
       loginName: "",
@@ -83,8 +84,7 @@ export default defineComponent({
         const data = response.data;
         loginModalLoading.value = false;
         if (data.success) {
-          user.value = data.content
-          store.commit("setUser", user.value)
+          store.commit("setUser", data.content)
           loginModalVisible.value = false;
           loginSuccess()
         } else {

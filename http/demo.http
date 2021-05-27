@@ -1,2 +1,8 @@
 GET http://localhost:8081/demo/list
 Accept: application/json
+
+###
+GET https://datacenter-api.jin10.com/reports/list_v2?category=etf&attr_id=1&max_date=2020-11-19&_=1622079586438
+Accept: application/json
+
+###
