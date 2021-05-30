@@ -126,7 +126,8 @@ import axios from 'axios';
 import {message, Modal} from 'ant-design-vue';
 import {Tool} from "@/util/tool";
 import {useRoute} from "vue-router";
-import E from 'wangeditor'
+// import E from 'wangeditor'
+import WangEditor from 'wangeditor';
 //全局提示
 
 
@@ -159,7 +160,8 @@ export default defineComponent({
     tempLevelData.value = []
     const loading = ref(false);
     //wangEditor
-    let editor: E
+    var editor: WangEditor
+    // const editor = new WangEditor("#content")
     const columns = [
       // {
       //   title: '父文档',
@@ -190,8 +192,6 @@ export default defineComponent({
     const modalLoading = ref<boolean>(false);
 
     const edit = (record: any) => {
-      //清空富文本框
-      editor.txt.html("")
       modalVisible.value = true;
       //Doc是对话框展示的数据 不直接使用列表的展示数据record 在对话框里的修改不会实时同步到列表
       tempLevelData.value = Tool.copy(levelData.value)
@@ -202,25 +202,10 @@ export default defineComponent({
       //最前面增加 无（根节点）
       tempLevelData.value.unshift({id: 0, name: '无'})
 
-      // setTimeout(function () {
-      // const editor = new E('#content')
-      // editor.config.zIndex = 0;
-      // editor.create();
-      // }, 100);
+      editor.create();
+      //清空富文本框
+      editor.txt.html("")
     };
-
-
-    /**
-     * 模拟确认
-     **/
-    const handleOk = () => {
-      modalLoading.value = true;
-      setTimeout(() => {
-        modalVisible.value = false;
-        modalLoading.value = false;
-      }, 2000);
-    };
-
 
     /**
      * 编辑/新增-确认
@@ -461,7 +446,7 @@ export default defineComponent({
       handleQuery();
 
       // const editor = new E('#content')
-      editor = new E("#content")
+      editor = new WangEditor("#content")
       editor.config.zIndex = 0;
       editor.create();
     });
@@ -474,12 +459,9 @@ export default defineComponent({
       modalText,
       modalVisible,
       Doc,
-      handleOk,
       handleSave,
       modalLoading,
-
       add,
-
       del,
 
       searchParam,
