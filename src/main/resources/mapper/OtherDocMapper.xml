@@ -13,5 +13,9 @@
         where id = #{id}
     </select>
 
-
+    <update id="incrementVoteCount">
+        update doc
+        set vote_count = vote_count + 1
+        where id = #{id}
+    </update>
 </mapper>

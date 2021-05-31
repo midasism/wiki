@@ -7,4 +7,6 @@ public interface OtherDocMapper {
     public int incrementViewCount(@Param("id") long id);
 
     public DocQueryResp queryCount(@Param("id") long id);
+
+    public int incrementVoteCount(@Param("id") long id);
 }

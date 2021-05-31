@@ -31,3 +31,15 @@ GET http://localhost:8081/doc/all/3
 Accept: application/json
 
 ###
+GET http://localhost:8081/doc/all/1
+Accept: application/json
+
+###
+POST http://localhost:8081/doc/vote
+Content-Type: application/json
+
+{
+  "id": 1
+}
+
+###

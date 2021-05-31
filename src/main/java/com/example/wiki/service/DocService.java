@@ -153,4 +153,8 @@ public class DocService {
     public DocQueryResp queryCount(long id) {
         return otherDocMapper.queryCount(id);
     }
+
+    public int vote(long id) {
+        return otherDocMapper.incrementVoteCount(id);
+    }
 }

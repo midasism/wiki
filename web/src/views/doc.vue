@@ -4,14 +4,14 @@
       <h2 v-if="levelData.length == 0">此电子书无文档！</h2>
       <a-row>
         <a-col :span="6">
-          <a-tree
-              v-if="levelData.length > 0"
-              :tree-data="levelData"
-              @select="onSelect"
-              :replaceFields="{title: 'name',key:'id',value:'id'}"
-              :defaultExpandAll="true"
-              :defaultSelectedKeys="defaultSelectedKeys"
-          ></a-tree>
+            <a-tree
+                v-if="levelData.length > 0"
+                :tree-data="levelData"
+                @select="onSelect"
+                :replaceFields="{title: 'name',key:'id',value:'id'}"
+                :defaultExpandAll="true"
+                :defaultSelectedKeys="defaultSelectedKeys"
+            ></a-tree>
         </a-col>
         <a-col :span="18">
           <div>
@@ -23,6 +23,15 @@
             <a-divider style="height: 2px;background-color: #9999cc;"/>
           </div>
           <div class="wangeditor" :innerHTML="html"></div>
+          <div style="text-align:center">
+            <br/><br/>
+            <a-button class="voteButton" type="primary" size="large" style="border-radius:15px" @click="vote(doc)">
+              <template #icon>
+                <LikeOutlined/>
+              </template>
+              点赞：{{doc.voteCount}}
+            </a-button>
+          </div>
         </a-col>
       </a-row>
     </a-layout-content>
@@ -30,7 +39,7 @@
 </template>
 
 <script lang="ts">
-import {SmileOutlined, DownOutlined, ExclamationCircleOutlined} from '@ant-design/icons-vue';
+import {SmileOutlined, DownOutlined, LikeOutlined, ExclamationCircleOutlined} from '@ant-design/icons-vue';
 import {createVNode, defineComponent, onMounted, ref} from 'vue';
 import axios from 'axios';
 import {message, Modal} from 'ant-design-vue';
@@ -45,6 +54,7 @@ export default defineComponent({
   components: {
     SmileOutlined,
     DownOutlined,
+    LikeOutlined,
     ExclamationCircleOutlined,
   },
 
@@ -121,6 +131,17 @@ export default defineComponent({
       }
     }
 
+    const vote = () => {
+      axios.post("/doc/vote/" + doc.value.id).then((response) => {
+        const data = response.data;
+        if (data.success) {
+          doc.value.voteCount = doc.value.voteCount + 1
+        } else {
+          message.error(data.message);
+        }
+      });
+    }
+
 
     //初始化数据
     onMounted(() => {
@@ -133,7 +154,8 @@ export default defineComponent({
       html,
       onSelect,
       defaultSelectedKeys,
-      doc
+      doc,
+      vote,
     }
   }
 });
@@ -217,4 +239,5 @@ export default defineComponent({
   width: 100%;
   height: 400px;
 }
+
 </style>
