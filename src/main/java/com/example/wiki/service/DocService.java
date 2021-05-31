@@ -149,4 +149,8 @@ public class DocService {
             return content.getContent();
         }
     }
+
+    public DocQueryResp queryCount(long id) {
+        return otherDocMapper.queryCount(id);
+    }
 }

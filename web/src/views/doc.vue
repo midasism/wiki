@@ -14,6 +14,14 @@
           ></a-tree>
         </a-col>
         <a-col :span="18">
+          <div>
+            <h2>{{ doc.name }}</h2>
+            <div>
+              <span>阅读数：{{ doc.viewCount }}</span>&nbsp;&nbsp;
+              <span>点赞数：{{ doc.voteCount }}</span>
+            </div>
+            <a-divider style="height: 2px;background-color: #9999cc;"/>
+          </div>
           <div class="wangeditor" :innerHTML="html"></div>
         </a-col>
       </a-row>
@@ -49,6 +57,9 @@ export default defineComponent({
     levelData.value = []//初始化列表 默认是null 调用length会报错
     const defaultSelectedKeys = ref()
     defaultSelectedKeys.value = []
+    //当前选中的文档
+    const doc = ref()
+    doc.value = {}
 
 
     /**
@@ -77,17 +88,36 @@ export default defineComponent({
           levelData.value = Tool.arrayTree(Docs.value, 0)
           defaultSelectedKeys.value = [levelData.value[0].id]
           handleQueryContent(levelData.value[0].id)
+          doc.value = levelData.value[0]
         } else {
           message.error(data.message);
         }
       });
     };
 
+    const QueryViewCount = (doc: any) => {
+      axios.get("/doc/queryCount/" + doc.value.id).then((response) => {
+        const data = response.data;
+        if (data.success) {
+          // Docs.value = data.content
+          console.log("阅读数：", data)
+          doc.value.viewCount = data.content.viewCount
+          doc.value.voteCount = data.content.voteCount
+        } else {
+          message.error(data.message);
+        }
+      });
+    }
+
 
     const onSelect = (selectedKeys: any, info: any) => {
-      console.log("selected", selectedKeys, info)
+      // console.log("selected", selectedKeys, info)
       if (Tool.isNotEmpty(selectedKeys)) {
+        //选中文档时，加载文档信息
+        doc.value = info.selectedNodes[0].props
         handleQueryContent(selectedKeys[0])
+        QueryViewCount(doc)
+        console.log("选中文档：", doc.value)
       }
     }
 
@@ -102,7 +132,8 @@ export default defineComponent({
       levelData,
       html,
       onSelect,
-      defaultSelectedKeys
+      defaultSelectedKeys,
+      doc
     }
   }
 });

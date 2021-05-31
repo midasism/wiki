@@ -65,5 +65,13 @@ public class DocController {
         resp.setContent(content);
         return resp;
     }
+
+    @GetMapping("/queryCount/{id}")
+    public CommonResp queryViewCount(@PathVariable Long id) {
+        CommonResp<DocQueryResp> resp = new CommonResp<>();
+        DocQueryResp docQueryResp = docService.queryCount(id);
+        resp.setContent(docQueryResp);
+        return resp;
+    }
 }
 
