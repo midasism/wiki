@@ -214,6 +214,7 @@ export default defineComponent({
       // modalLoading.value = true;
       Doc.value.ebookId = route.query.ebookId
       Doc.value.content = editor.txt.html()
+      console.log("待保存：",Doc.value)
       axios.post("/doc/save", Doc.value).then((response) => {
         const data = response.data;
         modalLoading.value = false;
@@ -223,6 +224,7 @@ export default defineComponent({
           modalVisible.value = false;
           //重新加载列表
           handleQuery();
+          Doc.value = {}
         } else {
           message.error(data.message)
         }
@@ -249,6 +251,9 @@ export default defineComponent({
     let AllDocNames = ""
 
     const del = (record: any) => {
+      console.log("删除id："+record.id)
+      deleteIds = []
+      console.log(levelData.value)
       getDeleteIds(levelData.value, record.id)
 
       if (deleteIds.length > 1) {

@@ -1,6 +1,7 @@
 package com.example.wiki.service;
 
 import com.example.wiki.entity.Content;
+import com.example.wiki.entity.ContentExample;
 import com.example.wiki.entity.Doc;
 import com.example.wiki.entity.DocExample;
 import com.example.wiki.mapper.ContentMapper;
@@ -122,6 +123,7 @@ public class DocService {
 
     public void delete(long id) {
         docMapper.deleteByPrimaryKey(id);
+        contentMapper.deleteByPrimaryKey(id);
     }
 
     public void delete(List<Long> ids) {
@@ -129,6 +131,12 @@ public class DocService {
         DocExample.Criteria criteria = example.createCriteria();
         criteria.andIdIn(ids);
         docMapper.deleteByExample(example);
+
+        //删除文档内容content
+        ContentExample contentExample = new ContentExample();
+        ContentExample.Criteria criteria1 = contentExample.createCriteria();
+        criteria1.andIdIn(ids);
+        contentMapper.deleteByExample(contentExample);
     }
 
     public String findContent(long id) {
