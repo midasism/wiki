@@ -9,4 +9,6 @@ public interface OtherDocMapper {
     public DocQueryResp queryCount(@Param("id") long id);
 
     public int incrementVoteCount(@Param("id") long id);
+
+    public void updateEbookInfo();
 }
