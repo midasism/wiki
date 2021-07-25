@@ -77,12 +77,7 @@ public class DocController {
     @PostMapping("/vote/{id}")
     public CommonResp vote(@PathVariable Long id) {
         CommonResp<Integer> resp = new CommonResp<>();
-        int flag = docService.vote(id);
-        if (flag == 1) {
-            resp.setSuccess(true);
-        } else {
-            resp.setSuccess(false);
-        }
+        docService.vote(id);
         return resp;
     }
 }
