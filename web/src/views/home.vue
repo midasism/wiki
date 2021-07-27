@@ -34,10 +34,21 @@
             <template #renderItem="{ item }">
               <a-list-item key="item.name">
                 <template #actions>
-          <span v-for="{ type, text } in actions" :key="type">
-            <component v-bind:is="type" style="margin-right: 8px"/>
-            {{ text }}
-          </span>
+                  <!-- 文档数 -->
+                  <span>
+                    <component v-bind:is="'ReadOutlined'" style="margin-right: 8px"/>
+                    {{ item.docCount }}
+                  </span>
+                  <!-- 阅读数 -->
+                  <span>
+                    <component v-bind:is="'EyeOutlined'" style="margin-right: 8px"/>
+                    {{ item.viewCount }}
+                  </span>
+                  <!-- 点赞数 -->
+                  <span>
+                    <component v-bind:is="'LikeOutlined'" style="margin-right: 8px"/>
+                    {{ item.voteCount }}
+                  </span>
                 </template>
                 <a-list-item-meta :description="item.description">
                   <template #title>
@@ -48,6 +59,7 @@
                   <template #avatar>
                     <a-avatar :src="item.cover"/>
                   </template>
+
                 </a-list-item-meta>
               </a-list-item>
             </template>
@@ -90,11 +102,11 @@ export default defineComponent({
 
     const isShowWelcome = ref(true)
 
-    const actions: Record<string, string>[] = [
-      {type: 'StarOutlined', text: '156'},
-      {type: 'LikeOutlined', text: '156'},
-      {type: 'MessageOutlined', text: '2'},
-    ];
+    // const actions: Record<string, string>[] = [
+    //   {type: 'StarOutlined', text: '156'},
+    //   {type: 'LikeOutlined', text: '156'},
+    //   {type: 'MessageOutlined', text: '2'},
+    // ];
 
     let category2Id = 0;
 
@@ -160,7 +172,7 @@ export default defineComponent({
     return {
       eBook,
       // books: toRef(eBook2, "books"),
-      actions,
+      // actions,
       ebooks,
       categoryData,
       categoryValue,
