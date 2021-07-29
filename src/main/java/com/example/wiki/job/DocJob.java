@@ -24,7 +24,7 @@ public class DocJob {
     /**
      * 每30秒更新电子书信息
      */
-    @Scheduled(cron = "5/5 * * * * ?")
+    @Scheduled(cron = "* 0/10 * * * ?")
     public void cron()  {
         MDC.put("LOG_ID", String.valueOf(snowFlake.nextId()));
         LOG.info("开始更新电子书文档信息，执行sql");
