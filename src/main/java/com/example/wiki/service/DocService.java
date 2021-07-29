@@ -17,6 +17,7 @@ import com.example.wiki.util.CopyUtil;
 import com.example.wiki.util.RedisUtil;
 import com.example.wiki.util.RequestContext;
 import com.example.wiki.util.SnowFlake;
+import com.example.wiki.websocket.WebSocketServer;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.slf4j.Logger;
@@ -25,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -46,6 +48,9 @@ public class DocService {
 
     @Resource
     private RedisUtil redisUtil;
+
+    @Resource
+    private WebSocketServer webSocketServer;
 
     /**
      * 分页获取数据
@@ -86,12 +91,28 @@ public class DocService {
     public List<DocQueryResp> all(Long id) {
         DocExample example = new DocExample();
         example.setOrderByClause("sort asc");
-        //        //相当于where语句
+        //相当于where语句
         DocExample.Criteria criteria = example.createCriteria();
         //实现：根据id查询
         criteria.andEbookIdEqualTo(id);
         List<Doc> docs = docMapper.selectByExample(example);
-        List<DocQueryResp> dataList = CopyUtil.copyList(docs, DocQueryResp.class);
+        List<DocQueryResp> dataList = copyDocList(docs);
+        return dataList;
+    }
+
+    /**
+     * @decription 将数据库读取的文档数据集合转化为DocQueryResp集合
+     * @param lists 数据库读取的文档数据
+     * @return DocQueryResp集合
+     */
+    private List<DocQueryResp> copyDocList(List<Doc> lists) {
+        List<DocQueryResp> dataList = new ArrayList<>();
+        for (int i = 0; i < lists.size(); i++) {
+            Doc oldDoc = lists.get(i);
+            DocQueryResp doc = CopyUtil.copy(oldDoc, DocQueryResp.class);
+            doc.setId(oldDoc.getId().toString());
+            dataList.add(doc);
+        }
         return dataList;
     }
 
@@ -172,6 +193,11 @@ public class DocService {
         } else {
             throw new BusinessException(BusinessExceptionCode.VOTE_REPEAT);
         }
+
+        // 推送消息
+        Doc doc = docMapper.selectByPrimaryKey(id);
+        String docName = doc.getName();
+        webSocketServer.sendInfo("【" + docName + "】被点赞了!");
     }
 
     public void updateEbookInfo() {
