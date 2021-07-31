@@ -9,7 +9,6 @@
 import {computed, defineComponent, onMounted} from 'vue';
 import store from "@/store";
 import {Tool} from "@/util/tool";
-import {message} from "ant-design-vue";
 import { notification } from 'ant-design-vue';
 
 export default defineComponent({
