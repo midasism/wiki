@@ -240,6 +240,9 @@ export default defineComponent({
       Doc.value = {}
       editor.txt.html("")
       tempLevelData.value = Tool.copy(levelData.value)
+      if (tempLevelData.value == null) {
+        tempLevelData.value = []
+      }
       //最前面增加 无（根节点）
       tempLevelData.value.unshift({id: 0, name: '无'})
     }
@@ -348,6 +351,9 @@ export default defineComponent({
           levelData.value = Tool.arrayTree(Docs.value, 0)
           //页面刚加载出来时就加载父文档结构，节省点击新增按钮的操作
           tempLevelData.value = Tool.copy(levelData.value)
+          if (tempLevelData.value == null) {
+              tempLevelData.value = []
+          }
           //最前面增加 无（根节点）
           tempLevelData.value.unshift({id: 0, name: '无'})
         } else {
