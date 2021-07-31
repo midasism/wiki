@@ -50,7 +50,7 @@ public class WebSocketServer {
      */
     @OnMessage
     public void onMessage(String message, Session session) {
-        LOG.info("收到消息：{}，内容：{}", token, message);
+        LOG.info("推送消息：{}，内容：{}", token, message);
     }
 
     /**

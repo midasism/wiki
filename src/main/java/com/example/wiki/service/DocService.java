@@ -52,6 +52,9 @@ public class DocService {
     @Resource
     private WebSocketServer webSocketServer;
 
+    @Resource
+    private WsService wsService;
+
     /**
      * 分页获取数据
      *
@@ -193,11 +196,10 @@ public class DocService {
         } else {
             throw new BusinessException(BusinessExceptionCode.VOTE_REPEAT);
         }
-
-        // 推送消息
         Doc doc = docMapper.selectByPrimaryKey(id);
         String docName = doc.getName();
-        webSocketServer.sendInfo("【" + docName + "】被点赞了!");
+        // 推送消息
+        wsService.sendInfo("【" + docName + "】被点赞了!");
     }
 
     public void updateEbookInfo() {
