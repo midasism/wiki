@@ -3,6 +3,7 @@ package com.example.wiki.service;
 import com.example.wiki.websocket.WebSocketServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -17,7 +18,8 @@ public class WsService {
     WebSocketServer webSocketServer;
 
     @Async
-    public void sendInfo(String info) {
+    public void sendInfo(String info, String logId) {
+        MDC.put("LOG_ID", logId);
         webSocketServer.sendInfo(info);
         LOG.info("推送消息" + info);
     }

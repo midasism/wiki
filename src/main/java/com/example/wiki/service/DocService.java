@@ -22,6 +22,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
@@ -199,7 +200,8 @@ public class DocService {
         Doc doc = docMapper.selectByPrimaryKey(id);
         String docName = doc.getName();
         // 推送消息
-        wsService.sendInfo("【" + docName + "】被点赞了!");
+        String logId = MDC.get("LOG_ID");
+        wsService.sendInfo("【" + docName + "】被点赞了!", logId);
     }
 
     public void updateEbookInfo() {
