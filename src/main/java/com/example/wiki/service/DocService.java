@@ -207,7 +207,6 @@ public class DocService {
         String docName = doc.getName();
         // 推送消息
         String logId = MDC.get("LOG_ID");
-//        wsService.sendInfo("【" + docName + "】被点赞了!", logId);
         rocketMQTemplate.convertAndSend("VOTE_TOPIC", "【" + docName + "】被点赞了!");
     }
 
