@@ -20,7 +20,6 @@ import com.example.wiki.util.SnowFlake;
 import com.example.wiki.websocket.WebSocketServer;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -58,8 +57,8 @@ public class DocService {
     @Resource
     private WsService wsService;
 
-    @Resource
-    private RocketMQTemplate rocketMQTemplate;
+//    @Resource
+//    private RocketMQTemplate rocketMQTemplate;
 
     /**
      * 分页获取数据
@@ -207,7 +206,8 @@ public class DocService {
         String docName = doc.getName();
         // 推送消息
         String logId = MDC.get("LOG_ID");
-        rocketMQTemplate.convertAndSend("VOTE_TOPIC", "【" + docName + "】被点赞了!");
+//        rocketMQTemplate.convertAndSend("VOTE_TOPIC", "【" + docName + "】被点赞了!");
+        wsService.sendInfo("【" + docName + "】被点赞了!", logId);
     }
 
     public void updateEbookInfo() {
