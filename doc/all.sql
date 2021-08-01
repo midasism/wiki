@@ -159,18 +159,36 @@ create table `content`
   default charset = utf8mb4 comment = '文档内容';
 
 
-    # 用户表
-    drop table if exists `user`;
-    create table `user`
-    (
-        `id`         bigint      not null comment 'ID',
-        `login_name` varchar(50) not null comment '登录名',
-        `name`       varchar(50) comment '昵称',
-        `password`   char(32)    not null comment '密码',
-        primary key (`id`),
-        unique key `login_name_unique` (`login_name`)
-    ) engine = innodb
-      default charset = utf8mb4 comment = '用户';
+# 用户表
+drop table if exists `user`;
+create table `user`
+(
+    `id`         bigint      not null comment 'ID',
+    `login_name` varchar(50) not null comment '登录名',
+    `name`       varchar(50) comment '昵称',
+    `password`   char(32)    not null comment '密码',
+    primary key (`id`),
+    unique key `login_name_unique` (`login_name`)
+) engine = innodb
+  default charset = utf8mb4 comment = '用户';
 
-insert into `user` (`id`,`login_name`,`name`,`password`) values(1,'test','测试','test');
-insert into `user` (`id`,`login_name`,`name`,`password`) values(2,'aaa','测试','aaa');
+insert into `user` (`id`, `login_name`, `name`, `password`)
+values (1, 'test', '测试', 'test');
+insert into `user` (`id`, `login_name`, `name`, `password`)
+values (2, 'aaa', '测试', 'aaa');
+
+
+# 电子书快照表
+drop table if exists `ebook_snapshot`;
+create table `ebook_snapshot`
+(
+    `id`         bigint auto_increment not null comment 'ID',
+    `ebook_id`   bigint                not null default 0 comment '电子书ID',
+    `date`       date                  not null comment '快照日期',
+    `view_count` int                   not null default 0 comment '阅读数',
+    `vote_count` int                   not null default 0 comment '点赞数',
+    `view_increase` int                   not null default 0 comment '阅读增长',
+    `vote_increase` int                   not null default 0 comment '点赞增长',
+    primary key (`id`)
+) engine = innodb
+  default charset = utf8mb4 comment = '电子书快照表';
